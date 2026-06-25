@@ -1,0 +1,16 @@
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/runner/System1TestRunner.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/pages/System1LoginPage.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/base/BaseSearchSteps.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/base/PageObjectRegistry.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/System1Context.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/pages/System1SearchPage.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/base/SharedLoginSteps.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/System1Setup.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/base/PageObjectProvider.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/base/BaseLoginSteps.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/System1LoginSteps.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/base/SharedSearchSteps.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/System1SearchSteps.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/pages/SearchPage.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/steps/System1PageObjectProvider.java
+/private/tmp/shared-automation-repo/team-a-system1/src/test/java/com/teama/pages/LoginPage.java

@@ -1,0 +1,6 @@
+/private/tmp/shared-automation-repo/shared-core/cucumber-base/src/main/java/com/sharedframework/cucumber/SystemContext.java
+/private/tmp/shared-automation-repo/shared-core/cucumber-base/src/main/java/com/sharedframework/cucumber/ScenarioContext.java
+/private/tmp/shared-automation-repo/shared-core/cucumber-base/src/main/java/com/sharedframework/cucumber/Hooks.java
+/private/tmp/shared-automation-repo/shared-core/cucumber-base/src/main/java/com/sharedframework/cucumber/steps/LoginSteps.java
+/private/tmp/shared-automation-repo/shared-core/cucumber-base/src/main/java/com/sharedframework/cucumber/LoginPageContract.java
+/private/tmp/shared-automation-repo/shared-core/cucumber-base/src/main/java/com/sharedframework/cucumber/SearchPageContract.java

@@ -15,6 +15,20 @@
     <description>Team B automation tests for System2 Financial Dashboard</description>
 
     <dependencies>
+        <!-- team-a test-jar: provides BaseLoginSteps, BaseSearchSteps, and shared feature files.
+             shared-core modules (cucumber-base, testdata-base, selenium-base) are pulled in
+             transitively through team-a-system1's own dependency declarations. -->
+        <dependency>
+            <groupId>com.sharedframework</groupId>
+            <artifactId>team-a-system1</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Retain direct shared-core references for IDE support and explicit versioning.
+             These are also pulled transitively from team-a-system1, but explicit declarations
+             ensure correct scope resolution. -->
         <dependency>
             <groupId>com.sharedframework</groupId>
             <artifactId>cucumber-base</artifactId>

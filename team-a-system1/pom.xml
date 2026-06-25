@@ -44,6 +44,21 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+
+            <!-- Packages test classes + base steps into team-a-system1-1.0.0-SNAPSHOT-tests.jar
+                 so other teams can import BaseLoginSteps, BaseSearchSteps, and shared feature files -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>test-jar</id>
+                        <phase>package</phase>
+                        <goals><goal>test-jar</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <testResources>
@@ -51,5 +66,25 @@
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
+
+        <!-- Include shared feature files in main JAR resources so classpath:features/shared works -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
     </build>
+
+    <!--
+    <distributionManagement>
+        <repository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.example.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+        </repository>
+        <snapshotRepository>
+            <id>gitlab-maven</id>
+            <url>https://gitlab.example.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+        </snapshotRepository>
+    </distributionManagement>
+    -->
 </project>

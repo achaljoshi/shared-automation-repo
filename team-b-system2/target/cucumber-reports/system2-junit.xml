@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Cucumber" time="4.708" tests="3" skipped="0" failures="0" errors="0">
+<testcase classname="System2 Financial Dashboard Specific Features" name="View portfolio summary dashboard" time="2.779">
+<system-out><![CDATA[
+Given the user is on the login page.........................................passed
+When the user enters valid credentials......................................passed
+And the user clicks the login button........................................passed
+Then the user should be logged in successfully..............................passed
+When the user navigates to the portfolio dashboard..........................passed
+Then the portfolio summary should be displayed..............................passed
+And the total assets value should be visible................................passed
+]]></system-out>
+</testcase>
+<testcase classname="System2 Financial Dashboard Specific Features" name="Generate a quarterly financial report" time="0.954">
+<system-out><![CDATA[
+Given the user is on the login page.........................................passed
+When the user enters valid credentials......................................passed
+And the user clicks the login button........................................passed
+Then the user should be logged in successfully..............................passed
+When the user selects report type "Quarterly Statement".....................passed
+And the user sets the date range from "2024-01-01" to "2024-03-31"..........passed
+And the user generates the report...........................................passed
+Then the report should be generated successfully............................passed
+And the report should be available for download.............................passed
+]]></system-out>
+</testcase>
+<testcase classname="System2 Financial Dashboard Specific Features" name="Generate an annual financial report" time="0.872">
+<system-out><![CDATA[
+Given the user is on the login page.........................................passed
+When the user enters valid credentials......................................passed
+And the user clicks the login button........................................passed
+Then the user should be logged in successfully..............................passed
+When the user selects report type "Annual Summary"..........................passed
+And the user sets the date range from "2024-01-01" to "2024-12-31"..........passed
+And the user generates the report...........................................passed
+Then the report should be generated successfully............................passed
+And the report should be available for download.............................passed
+]]></system-out>
+</testcase>
+</testsuite>

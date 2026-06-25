@@ -1,0 +1,6 @@
+com/sharedframework/cucumber/SystemContext.class
+com/sharedframework/cucumber/ScenarioContext.class
+com/sharedframework/cucumber/LoginPageContract.class
+com/sharedframework/cucumber/steps/LoginSteps.class
+com/sharedframework/cucumber/SearchPageContract.class
+com/sharedframework/cucumber/Hooks.class

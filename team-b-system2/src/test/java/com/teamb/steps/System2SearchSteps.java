@@ -1,67 +1,41 @@
 package com.teamb.steps;
 
 import com.sharedframework.cucumber.ScenarioContext;
-import com.sharedframework.cucumber.SearchPageContract;
-import com.teamb.System2Context;
+import com.teamb.pages.System2SearchPage;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 
+/**
+ * System2-specific search steps ONLY.
+ *
+ * Shared search steps (When user searches for, Then results should be displayed, etc.)
+ * are provided by SharedSearchSteps from team-a's test-jar.
+ * System2PageObjectProvider wires System2's search page into those shared steps.
+ *
+ * This class adds only what is unique to System2 Financial Dashboard.
+ */
 public class System2SearchSteps {
 
     private final ScenarioContext scenarioContext;
-    private final System2Context system2Context;
+    private final System2SearchPage searchPage = new System2SearchPage();
 
     public System2SearchSteps(ScenarioContext scenarioContext) {
         this.scenarioContext = scenarioContext;
-        this.system2Context = new System2Context();
     }
 
     @Given("the user is on the search page")
     public void theUserIsOnTheSearchPage() {
-        SearchPageContract searchPage = system2Context.getSearchPage();
         searchPage.navigateTo();
-        System.out.println("Navigated to search page for: " + system2Context.getSystemName());
-    }
-
-    @When("the user searches for {string}")
-    public void theUserSearchesFor(String searchTerm) {
-        SearchPageContract searchPage = system2Context.getSearchPage();
-        searchPage.enterSearchTerm(searchTerm);
-        searchPage.clickSearch();
-        scenarioContext.set("lastSearchTerm", searchTerm);
-        System.out.println("Searched for: " + searchTerm);
-    }
-
-    @Then("search results should be displayed")
-    public void searchResultsShouldBeDisplayed() {
-        SearchPageContract searchPage = system2Context.getSearchPage();
-        int count = searchPage.getResultCount();
-        System.out.println("Search returned " + count + " results");
+        System.out.println("[System2] Navigated to Financial Instrument Search page");
     }
 
     @Then("the result count should be greater than zero")
     public void theResultCountShouldBeGreaterThanZero() {
-        SearchPageContract searchPage = system2Context.getSearchPage();
         int count = searchPage.getResultCount();
         if (count <= 0) {
-            throw new AssertionError("Expected search results but found: " + count);
+            throw new AssertionError("[System2] Expected search results but found: " + count);
         }
         scenarioContext.set("searchResultCount", count);
-    }
-
-    @Then("no results message should be displayed")
-    public void noResultsMessageShouldBeDisplayed() {
-        SearchPageContract searchPage = system2Context.getSearchPage();
-        if (!searchPage.isNoResultsDisplayed()) {
-            throw new AssertionError("Expected 'no results' message but it was not displayed");
-        }
-    }
-
-    @When("the user clears the search")
-    public void theUserClearsTheSearch() {
-        SearchPageContract searchPage = system2Context.getSearchPage();
-        searchPage.clearSearch();
-        System.out.println("Search cleared");
+        System.out.println("[System2] Result count verified: " + count);
     }
 }

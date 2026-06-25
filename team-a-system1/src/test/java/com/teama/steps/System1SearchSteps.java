@@ -2,66 +2,49 @@ package com.teama.steps;
 
 import com.sharedframework.cucumber.ScenarioContext;
 import com.sharedframework.cucumber.SearchPageContract;
-import com.teama.System1Context;
+import com.teama.pages.System1SearchPage;
+import com.teama.steps.base.BaseSearchSteps;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 
-public class System1SearchSteps {
+/**
+ * System1-specific search steps.
+ * Extends BaseSearchSteps — all shared search @When/@Then logic is inherited.
+ * This class only provides the System1 search page object and System1-specific steps.
+ */
+public class System1SearchSteps extends BaseSearchSteps {
 
-    private final ScenarioContext scenarioContext;
-    private final System1Context system1Context;
+    private final System1SearchPage searchPage;
 
     public System1SearchSteps(ScenarioContext scenarioContext) {
-        this.scenarioContext = scenarioContext;
-        this.system1Context = new System1Context();
+        super(scenarioContext);
+        this.searchPage = new System1SearchPage();
     }
+
+    @Override
+    protected SearchPageContract getSearchPage() {
+        return searchPage;
+    }
+
+    @Override
+    protected String getSystemName() {
+        return "System1 - Government Portal";
+    }
+
+    // System1-ONLY steps below this line
 
     @Given("the user is on the search page")
     public void theUserIsOnTheSearchPage() {
-        SearchPageContract searchPage = system1Context.getSearchPage();
-        searchPage.navigateTo();
-        System.out.println("Navigated to search page for: " + system1Context.getSystemName());
+        getSearchPage().navigateTo();
+        System.out.println("[System1] Navigated to search page (Government Document Search)");
     }
 
-    @When("the user searches for {string}")
-    public void theUserSearchesFor(String searchTerm) {
-        SearchPageContract searchPage = system1Context.getSearchPage();
-        searchPage.enterSearchTerm(searchTerm);
-        searchPage.clickSearch();
-        scenarioContext.set("lastSearchTerm", searchTerm);
-        System.out.println("Searched for: " + searchTerm);
-    }
-
-    @Then("search results should be displayed")
-    public void searchResultsShouldBeDisplayed() {
-        SearchPageContract searchPage = system1Context.getSearchPage();
-        int count = searchPage.getResultCount();
-        System.out.println("Search returned " + count + " results");
-    }
-
-    @Then("the result count should be greater than zero")
+    @io.cucumber.java.en.Then("the result count should be greater than zero")
     public void theResultCountShouldBeGreaterThanZero() {
-        SearchPageContract searchPage = system1Context.getSearchPage();
-        int count = searchPage.getResultCount();
+        int count = getSearchPage().getResultCount();
         if (count <= 0) {
-            throw new AssertionError("Expected search results but found: " + count);
+            throw new AssertionError("[System1] Expected search results but found: " + count);
         }
         scenarioContext.set("searchResultCount", count);
-    }
-
-    @Then("no results message should be displayed")
-    public void noResultsMessageShouldBeDisplayed() {
-        SearchPageContract searchPage = system1Context.getSearchPage();
-        if (!searchPage.isNoResultsDisplayed()) {
-            throw new AssertionError("Expected 'no results' message but it was not displayed");
-        }
-    }
-
-    @When("the user clears the search")
-    public void theUserClearsTheSearch() {
-        SearchPageContract searchPage = system1Context.getSearchPage();
-        searchPage.clearSearch();
-        System.out.println("Search cleared");
+        System.out.println("[System1] Result count verified: " + count);
     }
 }

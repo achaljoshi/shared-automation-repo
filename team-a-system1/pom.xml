@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sharedframework</groupId>
+        <artifactId>shared-automation-framework</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>team-a-system1</artifactId>
+    <name>Team A - System1 Tests</name>
+    <description>Team A automation tests for System1 Government Portal</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sharedframework</groupId>
+            <artifactId>cucumber-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sharedframework</groupId>
+            <artifactId>testdata-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sharedframework</groupId>
+            <artifactId>selenium-base</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>**/*Runner*.java</include>
+                        <include>**/runner/*Runner.java</include>
+                    </includes>
+                    <systemPropertyVariables>
+                        <cucumber.filter.tags>${cucumber.filter.tags}</cucumber.filter.tags>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
+</project>

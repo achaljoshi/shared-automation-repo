@@ -29,11 +29,11 @@
         "panel": "shared",
         "clear": true
       },
-      "problemMatcher": ["$javac"],
-      "runOptions": {
-        // Ask once on project open if this should be run
-        "runOn": "folderOpen"
-      }
+      // NOTE: runOn:folderOpen is intentionally NOT set here.
+      // setup.bat / setup.sh must be run BEFORE opening VS Code.
+      // This task exists for re-running the bootstrap (e.g. after a git pull
+      // that updates shared-core or team-a pom). Run it via Ctrl+Shift+B.
+      "problemMatcher": ["$javac"]
     },
 
     {

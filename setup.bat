@@ -70,22 +70,26 @@ echo [OK] team-b-system2 compiles successfully
 REM ── 5. Done ──────────────────────────────────────────────────────────────────
 echo.
 echo ============================================================
-echo   Setup complete! Your project is ready.
+echo   Setup complete! Dependencies installed.
 echo ============================================================
 echo.
-echo   Next steps:
+echo   NEXT -- open your IDE NOW (setup must finish before IDE import):
 echo.
-echo   IntelliJ IDEA:
-echo     File -^> Open -^> select this folder
-echo     IDE auto-configures from .idea/ ^(SDK, compiler, run configs, Cucumber glue^)
-echo     Run configs appear in the toolbar: System1, System2, Bootstrap
+echo   +-- IntelliJ IDEA -----------------------------------------+
+echo   ^|  File -^> Open -^> select THIS folder                      ^|
+echo   ^|  Click "Open as Maven Project" when prompted             ^|
+echo   ^|  Run configs appear in toolbar automatically             ^|
+echo   ^|  Ctrl+Click any .feature step -^> jumps to correct .java  ^|
+echo   +-----------------------------------------------------------+
 echo.
-echo   VS Code:
-echo     code .
-echo     Click 'Install' on the extension recommendations popup
-echo     Ctrl+Shift+B to run Bootstrap task ^(if needed again^)
+echo   +-- VS Code ------------------------------------------------+
+echo   ^|  Run: code .                                              ^|
+echo   ^|  Click "Install" on extension recommendations popup      ^|
+echo   ^|  Wait for Java indexing (progress bar bottom-left)       ^|
+echo   ^|  Ctrl+Click any .feature step -^> jumps to correct .java  ^|
+echo   +-----------------------------------------------------------+
 echo.
-echo   Run tests:
+echo   Run tests from terminal (IDE optional):
 echo     mvnw.cmd test -pl team-a-system1
 echo     mvnw.cmd test -pl team-b-system2
 echo.

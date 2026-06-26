@@ -2,6 +2,79 @@
 
 A Maven multi-module automation framework enabling **cross-team test reuse** across government systems.
 
+---
+
+## Getting Started — Step-by-Step (follow this order)
+
+> **Important:** Run the setup script BEFORE opening the project in any IDE.
+> The IDE import depends on Maven dependencies that the script installs.
+> Opening the IDE first causes red "cannot resolve symbol" errors everywhere.
+
+### Step 1 — Clone the repo
+
+```bash
+git clone https://github.com/achaljoshi/shared-automation-repo.git
+cd shared-automation-repo
+```
+
+### Step 2 — Run the setup script
+
+**Windows:**
+```
+setup.bat
+```
+
+**macOS / Linux:**
+```bash
+chmod +x setup.sh && ./setup.sh
+```
+
+The script takes ~2 minutes and does the following in order:
+1. Verifies Java 11 is installed
+2. Builds `shared-core` modules (cucumber-base, selenium-base, api-base, testdata-base)
+3. Builds `team-a-system1` — installs its `tests.jar` and `test-sources.jar` into your local `.m2`
+4. Compiles `team-b-system2` to confirm the cross-team dependency resolves
+5. Prints "Setup complete" when done
+
+**The script must complete successfully before you open the IDE.**
+
+### Step 3 — Open in your IDE
+
+Both IDEs auto-configure themselves from files committed in this repo.
+No manual plugin setup, no Project Structure changes, no run config creation.
+
+#### IntelliJ IDEA
+
+```
+File → Open → select this folder → Open as Maven Project
+```
+
+Auto-configured on import:
+- Java 11 SDK (`.idea/misc.xml`)
+- Bytecode target 11 for all modules (`.idea/compiler.xml`)
+- UTF-8 encoding (`.idea/encodings.xml`)
+- Cucumber glue paths for step navigation (`.idea/cucumber.xml`)
+- Run configs in toolbar: **System1 — All Tests**, **System2 — All Tests**, **Bootstrap** (`.idea/runConfigurations/`)
+
+Verify step navigation works: open any `.feature` file → `Ctrl+Click` a shared step
+(e.g. `Given the user is on the login page`) → should jump to `SharedLoginSteps.java` in team-a.
+
+#### VS Code
+
+```bash
+code .
+```
+
+When VS Code opens:
+1. A popup appears: **"Do you want to install the recommended extensions?"** → click **Install**
+   (installs Java Pack + Cucumber + EditorConfig automatically)
+2. Wait for the Java Language Server to finish indexing (progress bar bottom-left)
+3. All Maven modules are imported automatically — no manual steps
+
+Run configs available in the Run panel (`launch.json`). Tasks available via `Ctrl+Shift+B`.
+
+---
+
 ## Architecture
 
 ```

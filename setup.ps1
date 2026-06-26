@@ -35,7 +35,33 @@ try {
 }
 
 # ── Step 1: Verify Java ───────────────────────────────────────────────────────
+# PowerShell sometimes misses PATH entries set in System Properties (unlike cmd.exe).
+# Refresh PATH from the registry before checking, and also try JAVA_HOME directly.
 Write-Host "> Checking Java version..." -ForegroundColor Yellow
+
+# Refresh PATH from both Machine and User registry so newly installed JDKs are found
+$machinePath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+$userPath    = [System.Environment]::GetEnvironmentVariable("Path", "User")
+$env:PATH    = "$machinePath;$userPath"
+
+# Also honour JAVA_HOME if set — add its bin to PATH
+if ($env:JAVA_HOME -and (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
+    $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+    Write-Host "  (using JAVA_HOME: $env:JAVA_HOME)" -ForegroundColor Gray
+}
+
+$javaCmd = Get-Command java -ErrorAction SilentlyContinue
+if (-not $javaCmd) {
+    Write-Host "[ERROR] 'java' not found on PATH and JAVA_HOME is not set." -ForegroundColor Red
+    Write-Host "        Fix options:" -ForegroundColor Red
+    Write-Host "          1. Close PowerShell, reopen it, and re-run .\setup.ps1" -ForegroundColor Yellow
+    Write-Host "             (PATH changes from installers need a new shell session)" -ForegroundColor Yellow
+    Write-Host "          2. Set JAVA_HOME in System Properties and re-run:" -ForegroundColor Yellow
+    Write-Host "             [System Properties -> Environment Variables -> JAVA_HOME]" -ForegroundColor Yellow
+    Write-Host "          3. Or run setup.bat from cmd.exe instead — it picks up PATH correctly" -ForegroundColor Yellow
+    exit 1
+}
+
 try {
     $javaOutput = & java -version 2>&1
     $javaVerLine = $javaOutput | Select-String -Pattern 'version' | Select-Object -First 1
@@ -52,7 +78,7 @@ try {
     }
     Write-Host "[OK] Java $javaMajor found (minimum required: 11)" -ForegroundColor Green
 } catch {
-    Write-Host "[ERROR] 'java' command not found. Install OpenJDK 11+ and add it to PATH." -ForegroundColor Red
+    Write-Host "[ERROR] Could not determine Java version: $_" -ForegroundColor Red
     exit 1
 }
 

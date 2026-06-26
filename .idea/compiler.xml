@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <!--
+    Sets Java 11 as the bytecode target for every module.
+    Without this file, IntelliJ defaults to the project SDK level
+    but may still compile some modules at a different level.
+    This matches maven.compiler.source=11 / maven.compiler.target=11 in the parent pom.
+  -->
+  <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Javac" />
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false" />
+    </annotationProcessing>
+    <bytecodeTargetLevel target="11">
+      <module name="shared-automation-framework" target="11" />
+      <module name="team-a-system1" target="11" />
+      <module name="team-b-system2" target="11" />
+      <module name="cucumber-base" target="11" />
+      <module name="selenium-base" target="11" />
+      <module name="api-base" target="11" />
+      <module name="testdata-base" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

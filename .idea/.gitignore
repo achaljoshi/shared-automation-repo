@@ -1,0 +1,19 @@
+# Commit: project-level IDE config (SDK, compiler, run configs, Cucumber glue)
+# Ignore: user-specific workspace state
+
+# User workspace (opened files, breakpoints, local history — different per developer)
+workspace.xml
+tasks.xml
+usage.statistics.xml
+dictionaries/
+shelf/
+
+# Sensitive or machine-specific
+httpRequests/
+dataSources/
+dataSources.local.xml
+*.iws
+
+# Dynamic indexes (regenerated on open)
+caches/
+libraries/*.xml

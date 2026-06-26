@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <!--
+    Sets the project SDK to Java 11 on import.
+    IntelliJ reads this file when the project is first opened and pre-selects
+    the JDK — no manual "Project Structure → SDK" step needed.
+    If the developer's machine has a different JDK path, IntelliJ will find the
+    nearest Java 11 installation automatically.
+  -->
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="createModuleForAggregatorPom" value="true" />
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

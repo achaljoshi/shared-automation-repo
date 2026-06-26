@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <!--
+    Run this ONCE after cloning. It builds shared-core and team-a's test-jar
+    so team-b can resolve the dependency.
+
+    After running this, all other run configs work without any manual mvn commands.
+    Appears in Run → Run... → "Bootstrap — First Time Build"
+  -->
+  <configuration default="false" name="Bootstrap — First Time Build" type="MavenRunConfiguration" factoryName="Maven">
+    <MavenSettings>
+      <option name="workingDirPath" value="$PROJECT_DIR$" />
+      <option name="goals" value="install -pl shared-core/cucumber-base,shared-core/selenium-base,shared-core/api-base,shared-core/testdata-base,team-a-system1 -am -DskipTests" />
+      <option name="pomFileName" value="pom.xml" />
+    </MavenSettings>
+    <method v="2" />
+  </configuration>
+</component>

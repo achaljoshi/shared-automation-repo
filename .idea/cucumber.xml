@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <!--
+    IntelliJ Cucumber plugin configuration.
+
+    WHY this file exists:
+      The Cucumber for Java plugin resolves step definitions in two modes:
+        1. Via the @CucumberOptions(glue=...) on the runner class — used at RUNTIME
+        2. Via this file — used by the EDITOR for "Go to Step Definition" and
+           underlining undefined steps in .feature files
+
+    Without this file, opening a team-b .feature file shows all shared steps
+    (Given the user is on the login page, etc.) as undefined/red, even though
+    they are defined in SharedLoginSteps.java inside team-a's source.
+
+    The glue paths listed here mirror the union of all runner glue configs:
+      team-a runner: com.teama.steps.base + com.teama.steps + com.sharedframework.cucumber
+      team-b runner: com.teama.steps.base + com.teamb.steps  + com.sharedframework.cucumber
+  -->
+  <component name="CucumberConfiguration">
+    <option name="glue" value="com.teama.steps.base com.teama.steps com.teamb.steps com.sharedframework.cucumber" />
+  </component>
+</project>

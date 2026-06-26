@@ -45,8 +45,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Packages test classes + base steps into team-a-system1-1.0.0-SNAPSHOT-tests.jar
-                 so other teams can import BaseLoginSteps, BaseSearchSteps, and shared feature files -->
+            <!-- Packages test classes into team-a-system1-*-tests.jar for other teams to import -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -56,6 +55,29 @@
                         <id>test-jar</id>
                         <phase>package</phase>
                         <goals><goal>test-jar</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+                Generates two sources JARs alongside the binary JARs:
+                  team-a-system1-*-sources.jar       (src/main/java)
+                  team-a-system1-*-test-sources.jar  (src/test/java)  ← IDEs attach this to the
+                                                                          tests.jar so "Go to Definition"
+                                                                          works for SharedLoginSteps etc.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>       <!-- main sources  -->
+                            <goal>test-jar-no-fork</goal>  <!-- test sources  -->
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

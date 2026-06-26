@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <!--
+    Pre-configured run config for Team A tests.
+    IntelliJ loads this automatically on project open — no "Edit Configurations" needed.
+
+    STEP NAVIGATION in this config:
+      module="team-a-system1" sets the classpath. Since team-a source is a module
+      in this project, Ctrl+Click on any step in a .feature file jumps directly to
+      SharedLoginSteps.java or System1LoginSteps.java — no extra setup.
+  -->
+  <configuration default="false" name="System1 — All Tests (@sys1 or @shared)" type="JUnit" factoryName="JUnit">
+    <module name="team-a-system1" />
+    <option name="MAIN_CLASS_NAME" value="com.teama.runner.System1TestRunner" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="VM_PARAMETERS" value="-Dtest.username=testuser -Dtest.password=testpass" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <envs />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

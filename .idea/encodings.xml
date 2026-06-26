@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <!--
+    Forces UTF-8 for all source files and .feature files.
+    Without this, IntelliJ may default to the OS locale (e.g. windows-1252 on Windows)
+    which causes garbled characters in feature file text and step annotations.
+  -->
+  <component name="Encoding">
+    <file url="PROJECT" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/team-a-system1/src" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/team-b-system2/src" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/shared-core" charset="UTF-8" />
+  </component>
+</project>

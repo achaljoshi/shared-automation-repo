@@ -1,0 +1,35 @@
+{
+  //
+  // VS Code reads this file when the project is opened and shows a popup:
+  // "This workspace has extension recommendations. Do you want to install them?"
+  // → One click installs everything the project needs.
+  //
+  // To trigger the popup manually: Ctrl+Shift+P → "Extensions: Show Recommended Extensions"
+  //
+  "recommendations": [
+    // ── Java ─────────────────────────────────────────────────────────────
+    // Installs the full Java pack: Language Support (Red Hat), Debugger,
+    // Test Runner (JUnit), Maven support, Project Manager — all in one.
+    "vscjava.vscode-java-pack",
+
+    // ── Cucumber ─────────────────────────────────────────────────────────
+    // Gherkin syntax highlighting + "Go to Step Definition" (Ctrl+Click).
+    // Reads cucumberautocomplete.steps from settings.json to index both
+    // team-a/steps/base/*.java (shared steps) and team-b/steps/*.java.
+    "alexkrechik.cucumberautocomplete",
+
+    // ── Editor quality-of-life ────────────────────────────────────────────
+    // Reads .editorconfig at repo root for consistent tab/indent/encoding
+    // across all editors — no manual settings required.
+    "EditorConfig.EditorConfig",
+
+    // XML formatting (pom.xml, .idea/*.xml)
+    "redhat.vscode-xml",
+
+    // GitLens — inline blame, history, compare (optional but recommended)
+    "eamodio.gitlens"
+  ],
+
+  // Extensions that conflict with this project (IntelliJ-specific plugins, etc.)
+  "unwantedRecommendations": []
+}

@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="System2 — Shared Tests Only" type="JUnit" factoryName="JUnit">
+    <module name="team-b-system2" />
+    <option name="MAIN_CLASS_NAME" value="com.teamb.runner.System2TestRunner" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="VM_PARAMETERS" value="-Dcucumber.filter.tags=@shared -Dtest.username=testuser -Dtest.password=testpass" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <envs />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

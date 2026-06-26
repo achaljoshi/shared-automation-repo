@@ -1,0 +1,69 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "System1 — all tests (@sys1 or @shared)",
+      "request": "launch",
+      "mainClass": "org.junit.runner.JUnitCore",
+      "args": "com.teama.runner.System1TestRunner",
+      "projectName": "team-a-system1",
+      "cwd": "${workspaceFolder}/team-a-system1",
+      "vmArgs": "-Dtest.username=testuser -Dtest.password=testpass",
+      // sourcePaths tells the debugger to resolve SharedLoginSteps.java
+      // from team-a source — breakpoints and "step into" will land in the
+      // correct file instead of showing decompiled bytecode.
+      "sourcePaths": [
+        "${workspaceFolder}/team-a-system1/src/test/java",
+        "${workspaceFolder}/team-a-system1/src/main/java",
+        "${workspaceFolder}/shared-core/cucumber-base/src/main/java"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "System2 — all tests (@sys2 or @shared)",
+      "request": "launch",
+      "mainClass": "org.junit.runner.JUnitCore",
+      "args": "com.teamb.runner.System2TestRunner",
+      "projectName": "team-b-system2",
+      "cwd": "${workspaceFolder}/team-b-system2",
+      "vmArgs": "-Dtest.username=testuser -Dtest.password=testpass",
+      // WHY both source paths: when a shared step (from team-a JAR) is hit
+      // during debugging on team-b, the debugger needs team-a's source to
+      // show the correct file. Without this, VS Code shows decompiled bytecode.
+      "sourcePaths": [
+        "${workspaceFolder}/team-b-system2/src/test/java",
+        "${workspaceFolder}/team-b-system2/src/main/java",
+        "${workspaceFolder}/team-a-system1/src/test/java",
+        "${workspaceFolder}/shared-core/cucumber-base/src/main/java"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "System2 — shared tests only (@shared)",
+      "request": "launch",
+      "mainClass": "org.junit.runner.JUnitCore",
+      "args": "com.teamb.runner.System2TestRunner",
+      "projectName": "team-b-system2",
+      "cwd": "${workspaceFolder}/team-b-system2",
+      "vmArgs": "-Dcucumber.filter.tags=@shared -Dtest.username=testuser -Dtest.password=testpass",
+      "sourcePaths": [
+        "${workspaceFolder}/team-b-system2/src/test/java",
+        "${workspaceFolder}/team-a-system1/src/test/java"
+      ]
+    },
+    {
+      "type": "java",
+      "name": "System1 — login tag only",
+      "request": "launch",
+      "mainClass": "org.junit.runner.JUnitCore",
+      "args": "com.teama.runner.System1TestRunner",
+      "projectName": "team-a-system1",
+      "cwd": "${workspaceFolder}/team-a-system1",
+      "vmArgs": "-Dcucumber.filter.tags=@login -Dtest.username=testuser -Dtest.password=testpass",
+      "sourcePaths": [
+        "${workspaceFolder}/team-a-system1/src/test/java"
+      ]
+    }
+  ]
+}

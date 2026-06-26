@@ -1,0 +1,30 @@
+# EditorConfig — https://editorconfig.org
+# Both IntelliJ IDEA and VS Code (with EditorConfig extension) read this file
+# automatically on project open. No manual settings needed.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.java]
+indent_size = 4
+
+[*.xml]
+indent_size = 4
+
+[*.feature]
+# Gherkin: 2-space indent for steps inside Given/When/Then blocks
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.json]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

@@ -1,0 +1,26 @@
+<component name="ProjectRunConfigurationManager">
+  <!--
+    Pre-configured run config for Team B tests.
+    IntelliJ loads this automatically on project open — no "Edit Configurations" needed.
+
+    STEP NAVIGATION in this config:
+      module="team-b-system2" sets the runtime classpath (includes team-a-tests.jar via pom.xml).
+      Because team-a-system1 is ALSO a module in this project, IntelliJ resolves
+      SharedLoginSteps from SOURCE — Ctrl+Click jumps to the .java file, not decompiled bytecode.
+
+    If team-a is only a JAR (separate clone), attach sources via:
+      Project Structure → Libraries → team-a-system1:tests → add team-a-system1-test-sources.jar
+  -->
+  <configuration default="false" name="System2 — All Tests (@sys2 or @shared)" type="JUnit" factoryName="JUnit">
+    <module name="team-b-system2" />
+    <option name="MAIN_CLASS_NAME" value="com.teamb.runner.System2TestRunner" />
+    <option name="METHOD_NAME" value="" />
+    <option name="TEST_OBJECT" value="class" />
+    <option name="VM_PARAMETERS" value="-Dtest.username=testuser -Dtest.password=testpass" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$" />
+    <envs />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

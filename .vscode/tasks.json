@@ -1,0 +1,126 @@
+{
+  "version": "2.0.0",
+  //
+  // All tasks available via: Ctrl+Shift+P → "Tasks: Run Task"
+  // The "Bootstrap" task is marked as the default build task so it runs
+  // automatically when you open the project for the first time via
+  // Terminal → Run Build Task (Ctrl+Shift+B).
+  //
+  "tasks": [
+    {
+      // ── STEP 1: Run this first on a fresh clone ─────────────────────────
+      // Builds shared-core + team-a test-jar so team-b can resolve the dependency.
+      // After this, all other tasks and debug configs work without mvn commands.
+      "label": "Bootstrap — First Time Build",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": [
+        "install",
+        "-pl", "shared-core/cucumber-base,shared-core/selenium-base,shared-core/api-base,shared-core/testdata-base,team-a-system1",
+        "-am",
+        "-DskipTests"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": ["$javac"],
+      "runOptions": {
+        // Ask once on project open if this should be run
+        "runOn": "folderOpen"
+      }
+    },
+
+    {
+      // ── Rebuild shared steps JAR (after editing SharedLoginSteps etc.) ──
+      // Regenerates tests.jar + test-sources.jar so other teams pick up changes.
+      "label": "Rebuild team-a test-jar (shared steps changed)",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": [
+        "package",
+        "-pl", "team-a-system1",
+        "-DskipTests"
+      ],
+      "group": "build",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": ["$javac"]
+    },
+
+    {
+      "label": "Test — System1 All (@sys1 or @shared)",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": [
+        "test",
+        "-pl", "team-a-system1",
+        "-Dtest.username=testuser",
+        "-Dtest.password=testpass"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": ["$javac"]
+    },
+
+    {
+      "label": "Test — System2 All (@sys2 or @shared)",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": [
+        "test",
+        "-pl", "team-b-system2",
+        "-Dtest.username=testuser",
+        "-Dtest.password=testpass"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": ["$javac"]
+    },
+
+    {
+      "label": "Test — System2 Shared Only (@shared)",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": [
+        "test",
+        "-pl", "team-b-system2",
+        "-Dcucumber.filter.tags=@shared",
+        "-Dtest.username=testuser",
+        "-Dtest.password=testpass"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": ["$javac"]
+    },
+
+    {
+      "label": "Test — System1 Login Tag Only",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": [
+        "test",
+        "-pl", "team-a-system1",
+        "-Dcucumber.filter.tags=@login",
+        "-Dtest.username=testuser"
+      ],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": ["$javac"]
+    },
+
+    {
+      "label": "Test — All Modules",
+      "type": "shell",
+      "command": "./mvnw",
+      "args": ["test", "--fail-at-end"],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": ["$javac"]
+    }
+  ]
+}

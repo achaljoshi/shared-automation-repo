@@ -27,6 +27,36 @@ echo   Shared Automation Framework — First Time Setup
 echo ============================================================
 echo.
 
+REM ── 0. Fix PowerShell execution policy ───────────────────────────────────────
+REM
+REM Government machines often set PowerShell execution policy to "Restricted",
+REM which blocks .ps1 scripts — including those called internally by mvnw.cmd
+REM and the Maven wrapper download step.
+REM
+REM RemoteSigned allows locally created scripts to run freely and only requires
+REM a signature for scripts downloaded from the internet. This is the minimum
+REM policy needed for Maven wrapper and VS Code extension tasks to work.
+REM
+REM Scope=CurrentUser: applies to your profile only — no admin rights required.
+REM The 2>nul suppresses the error if PowerShell itself is blocked by policy.
+REM
+REM Skip if setup.ps1 already handled the execution policy
+if "%SKIP_POLICY%"=="1" goto :skip_policy
+
+echo ^> Setting PowerShell execution policy (CurrentUser: RemoteSigned)...
+powershell -NoProfile -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force" 2>nul
+if errorlevel 1 (
+  echo [WARN] Could not set execution policy automatically.
+  echo        If Maven wrapper or mvnw.cmd fails, run this manually in PowerShell:
+  echo          Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+  echo        Or ask IT to set it, then re-run .\setup.bat
+  echo.
+) else (
+  echo [OK] Execution policy set to RemoteSigned for current user
+)
+
+:skip_policy
+
 REM ── 1. Check Java ────────────────────────────────────────────────────────────
 echo ^> Checking Java version...
 for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (

@@ -19,18 +19,33 @@ cd shared-automation-repo
 
 ### Step 2 — Run the setup script
 
+**Windows — PowerShell (recommended):**
+```powershell
+.\setup.ps1
+```
+
 **Windows — Command Prompt (cmd.exe):**
 ```
 setup.bat
 ```
 
-**Windows — PowerShell:**
+**Windows — PowerShell fallback (if .ps1 is blocked by policy):**
 ```powershell
 .\setup.bat
 ```
 
-> PowerShell requires `.\` before script names. Typing `setup.bat` without it gives
-> "not recognized" error. Use `.\setup.bat` or switch to cmd.exe.
+> **Execution policy:** Government machines often block `.ps1` scripts with
+> *"cannot be loaded because running scripts is disabled on this system."*
+>
+> `setup.ps1` fixes this automatically — it sets `RemoteSigned` policy for your
+> user profile (no admin rights needed) then runs the build.
+>
+> If even `setup.ps1` is blocked, run this **once** in PowerShell first:
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+> ```
+> Then re-run `.\setup.ps1`. Alternatively use `.\setup.bat` — `.bat` files
+> are never affected by PowerShell execution policy.
 
 **macOS / Linux:**
 ```bash

@@ -11,7 +11,7 @@
 ```
 1.  git clone https://github.com/achaljoshi/shared-automation-repo.git
 2.  cd shared-automation-repo
-3.  .\setup.bat        (Windows PowerShell)   ← run BEFORE opening any IDE
+3.  .\setup.ps1        (Windows PowerShell — recommended)  ← run BEFORE opening any IDE
     setup.bat          (Windows cmd.exe)
     ./setup.sh         (macOS / Linux)
 4.  Open IDE — everything is auto-configured from committed files
@@ -110,14 +110,9 @@ Bundled in the repo at `shared-core/selenium-base/drivers/`. No download needed.
 
 Run **once** after cloning, **before opening any IDE**.
 
-```bash
-# macOS / Linux
-chmod +x setup.sh && ./setup.sh
-```
-
 ```powershell
-# Windows — PowerShell
-.\setup.bat
+# Windows — PowerShell (recommended)
+.\setup.ps1
 ```
 
 ```
@@ -125,8 +120,29 @@ chmod +x setup.sh && ./setup.sh
 setup.bat
 ```
 
-> **PowerShell note:** Typing `setup.bat` without `.\` gives "not recognized as the name of a cmdlet"
-> error. This is normal PowerShell behaviour — always use `.\setup.bat` in PowerShell.
+```bash
+# macOS / Linux
+chmod +x setup.sh && ./setup.sh
+```
+
+> **Windows execution policy:** Government machines frequently have PowerShell execution
+> policy set to `Restricted`, which blocks `.ps1` scripts with:
+> *"cannot be loaded because running scripts is disabled on this system."*
+>
+> **`setup.ps1` fixes this for you** — it sets `RemoteSigned` policy (no admin rights needed)
+> before running any build steps, so `mvnw.cmd` and VS Code tasks also work.
+>
+> **If `setup.ps1` itself is blocked** (policy is `AllSigned` or enforced by Group Policy):
+> ```powershell
+> # Run once in PowerShell — no admin required
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+> # Then:
+> .\setup.ps1
+> ```
+>
+> **Fallback — use `.\setup.bat` instead.** Batch files (`.bat`) are never affected by
+> PowerShell execution policy. `setup.bat` also calls the same policy fix command
+> internally so subsequent PowerShell-based tools work correctly.
 
 ### What the script does
 

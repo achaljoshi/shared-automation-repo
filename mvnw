@@ -17,6 +17,11 @@ else
   fi
 fi
 
+# Prefer globally installed Maven
+if command -v mvn > /dev/null 2>&1; then
+  exec mvn "$@"
+fi
+
 MAVEN_PROJECTBASEDIR="$(cd "$(dirname "$0")" && pwd)"
 WRAPPER_PROPERTIES="$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.properties"
 

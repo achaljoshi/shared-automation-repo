@@ -3,7 +3,7 @@ Feature: System2 Financial Dashboard Specific Features
   As a financial system user
   I want to access financial dashboard features
   So that I can manage my portfolio and generate financial reports
-  Note: Login steps (Background) are inherited from BaseLoginSteps via team-a test-jar.
+  Note: Login steps (Background) come from SharedLoginSteps in team-a test-jar via PageObjectRegistry.
   Only the portfolio/report steps below are System2-specific.
 
   Background:

@@ -44,6 +44,13 @@ echo -e "${GREEN}✓ Java $JAVA_MAJOR found (minimum required: 11)${NC}"
 chmod +x mvnw
 echo -e "${GREEN}✓ Maven wrapper ready${NC}"
 
+# ── 2b. Mark IDE config files skip-worktree ──────────────────────────────────
+echo ""
+echo "▶ Configuring git to ignore local IDE file changes..."
+git ls-files .idea/ .vscode/ | xargs git update-index --skip-worktree 2>/dev/null || true
+echo -e "${GREEN}✓ IDE config files marked skip-worktree${NC}"
+echo ""
+
 # ── 3. Build shared-core ──────────────────────────────────────────────────────
 echo ""
 echo "▶ Building shared-core modules..."

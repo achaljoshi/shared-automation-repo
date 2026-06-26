@@ -144,15 +144,18 @@ The **same `.feature` file** runs on both systems. No duplication.
 
 ## Running Tests
 
+**macOS / Linux / cmd.exe:**
 ```bash
-# System 1 — shared + system-specific tests
 mvn test -pl team-a-system1 -Dcucumber.filter.tags="@shared or @sys1"
-
-# System 2 — shared + system-specific tests
 mvn test -pl team-b-system2 -Dcucumber.filter.tags="@shared or @sys2"
-
-# Shared scenarios only (any system)
 mvn test -pl team-a-system1 -Dcucumber.filter.tags="@shared"
+```
+
+**Windows PowerShell** — use single quotes around the `-D` value (`@` is a splat operator in double-quoted strings):
+```powershell
+mvn test -pl team-a-system1 '-Dcucumber.filter.tags=@shared or @sys1'
+mvn test -pl team-b-system2 '-Dcucumber.filter.tags=@shared or @sys2'
+mvn test -pl team-a-system1 '-Dcucumber.filter.tags=@shared'
 ```
 
 ## Tech Stack

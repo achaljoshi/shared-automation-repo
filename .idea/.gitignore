@@ -13,7 +13,13 @@ httpRequests/
 dataSources/
 dataSources.local.xml
 *.iws
+*.iml
 
-# Dynamic indexes (regenerated on open)
+# Dynamic indexes — regenerated on open, never commit
 caches/
-libraries/*.xml
+libraries/
+modules.xml
+
+# Temp backup files some editors create
+*.xml~
+*.xml.bak

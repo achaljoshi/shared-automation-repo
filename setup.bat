@@ -81,7 +81,13 @@ if %JAVA_MAJOR% LSS 11 (
   echo [OK] Java %JAVA_MAJOR% found ^(minimum required: 11^)
 )
 
-REM ── 2. Build shared-core ─────────────────────────────────────────────────────
+REM ── 2. Mark IDE config files so local IDE changes do not dirty the working tree
+echo.
+echo ^> Configuring git to ignore local IDE file changes...
+for /f "usebackq" %%F in (`git ls-files .idea/ .vscode/`) do git update-index --skip-worktree "%%F"
+echo [OK] IDE config files marked skip-worktree
+
+REM ── 3. Build shared-core ─────────────────────────────────────────────────────
 echo.
 echo ^> Building shared-core modules...
 call mvnw.cmd install -pl shared-core/cucumber-base,shared-core/selenium-base,shared-core/api-base,shared-core/testdata-base -am -DskipTests -q

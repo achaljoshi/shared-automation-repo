@@ -1,135 +1,176 @@
 # Developer Setup Guide — Shared Automation Framework
 
-> **Stack:** Java 11 · Maven 3.8+ · Cucumber 7.15 · Selenium 4.18 · JUnit 4 · RestAssured 5.4  
+> **Stack:** Java 11 · Maven 3.9 (via wrapper) · Cucumber 7.15 · Selenium 4.18 · JUnit 4 · RestAssured 5.4  
 > **Repos:** `team-a-system1` (owner) · `team-b-system2` (consumer) · `shared-core` (base libraries)  
 > **Constraint:** Government machine — no internet, no Docker, no admin rights required after initial setup.
 
 ---
 
-## Table of Contents
+## ⚡ Quick Start (TL;DR)
 
-1. [Prerequisites (both IDEs)](#1-prerequisites-both-ides)
-2. [IntelliJ IDEA Setup](#2-intellij-idea-setup)
-   - 2.1 [Install Plugins](#21-install-plugins)
-   - 2.2 [Import the Project](#22-import-the-project)
-   - 2.3 [Configure JDK](#23-configure-jdk)
-   - 2.4 [Configure Maven](#24-configure-maven)
-   - 2.5 [Cucumber Run Configuration](#25-cucumber-run-configuration)
-   - 2.6 [Run Tests via IntelliJ](#26-run-tests-via-intellij)
-   - 2.7 [Debugging Tests](#27-debugging-tests)
-   - 2.8 [IntelliJ Troubleshooting](#28-intellij-troubleshooting)
-3. [VS Code Setup](#3-vs-code-setup)
-   - 3.1 [Install Extensions](#31-install-extensions)
-   - 3.2 [Open the Project](#32-open-the-project)
-   - 3.3 [Configure Java Runtime](#33-configure-java-runtime)
-   - 3.4 [Configure Maven in VS Code](#34-configure-maven-in-vs-code)
-   - 3.5 [settings.json Configuration](#35-settingsjson-configuration)
-   - 3.6 [Cucumber Extension Configuration](#36-cucumber-extension-configuration)
-   - 3.7 [Run & Debug Tests](#37-run--debug-tests)
-   - 3.8 [VS Code Troubleshooting](#38-vs-code-troubleshooting)
-4. [First-Time Build (both IDEs)](#4-first-time-build-both-ides)
-5. [Running Tests from Terminal](#5-running-tests-from-terminal)
-6. [Project Structure Reference](#6-project-structure-reference)
-7. [Environment Variables & System Properties](#7-environment-variables--system-properties)
-8. [Common Errors & Fixes](#8-common-errors--fixes)
+```
+1.  git clone https://github.com/achaljoshi/shared-automation-repo.git
+2.  cd shared-automation-repo
+3.  setup.bat          (Windows)   ← run this BEFORE opening any IDE
+    ./setup.sh         (Mac/Linux)
+4.  Open IDE — everything is auto-configured from committed files
+```
+
+> **Why setup first?** The IDE import resolves Maven dependencies from your local `.m2` cache.
+> If you open the IDE before running setup, those JARs don't exist yet and every import shows red.
+> The script installs them. Then the IDE opens clean.
 
 ---
 
-## 1. Prerequisites (both IDEs)
+## Table of Contents
 
-Complete these steps before opening either IDE.
+1. [Prerequisites](#1-prerequisites)
+2. [First-Time Setup Script](#2-first-time-setup-script)
+3. [IntelliJ IDEA](#3-intellij-idea)
+   - 3.1 [What Auto-Configures on Import](#31-what-auto-configures-on-import)
+   - 3.2 [Open the Project](#32-open-the-project)
+   - 3.3 [Plugins (offline machines)](#33-plugins-offline-machines)
+   - 3.4 [Maven Settings (offline machines)](#34-maven-settings-offline-machines)
+   - 3.5 [Run Configs — Pre-Built](#35-run-configs--pre-built)
+   - 3.6 [Debugging Tests](#36-debugging-tests)
+   - 3.7 [IntelliJ Troubleshooting](#37-intellij-troubleshooting)
+4. [VS Code](#4-vs-code)
+   - 4.1 [What Auto-Configures on Open](#41-what-auto-configures-on-open)
+   - 4.2 [Open the Project](#42-open-the-project)
+   - 4.3 [Extensions (offline machines)](#43-extensions-offline-machines)
+   - 4.4 [Update Java Path for Your Machine](#44-update-java-path-for-your-machine)
+   - 4.5 [Run & Debug Tests](#45-run--debug-tests)
+   - 4.6 [VS Code Troubleshooting](#46-vs-code-troubleshooting)
+5. [Step Navigation — "Go to Definition"](#5-step-navigation--go-to-definition)
+6. [Running Tests from Terminal](#6-running-tests-from-terminal)
+7. [Project Structure Reference](#7-project-structure-reference)
+8. [Environment Variables & System Properties](#8-environment-variables--system-properties)
+9. [Common Errors & Fixes](#9-common-errors--fixes)
 
-### 1.1 Java 11 JDK
+---
+
+## 1. Prerequisites
+
+Only two things must be manually installed. Everything else is handled by the setup script or committed IDE config.
+
+### Java 11 JDK
 
 ```bash
 java -version
-# Must show: openjdk 11.x.x or java 11.x.x
+# Must show: openjdk 11.x.x  or  java 11.x.x
 ```
 
 If not installed, get OpenJDK 11 from the shared network drive or your IT team.  
-**Do not use Java 8 or Java 17** — the `maven.compiler.source=11` in `pom.xml` requires exactly Java 11.
+**Do not use Java 8 or Java 17** — `maven.compiler.source=11` in `pom.xml` requires exactly Java 11.
 
-### 1.2 Maven 3.8+
+### Maven — not required to install separately
+
+The repo ships with a **Maven wrapper** (`mvnw` / `mvnw.cmd`). It downloads and manages Maven 3.9.6 automatically on first run. You never need to install Maven globally.
 
 ```bash
-mvn -version
-# Must show: Apache Maven 3.8.x or higher
+./mvnw -version          # macOS/Linux
+mvnw.cmd -version        # Windows
 ```
 
-If not installed, download `apache-maven-3.8.x-bin.zip` from the shared drive, extract it, and add `bin/` to your `PATH`:
+> **Offline machines:** Place `apache-maven-3.9.6-bin.zip` in `.mvn/wrapper/` and update
+> `.mvn/wrapper/maven-wrapper.properties` to use a `file:///` URL instead of the download URL.
 
-**Windows:**
-```
-System Properties → Environment Variables → Path → Add: C:\tools\apache-maven-3.8.x\bin
-```
+### Local `.m2` seed (no-internet machines)
 
-**macOS/Linux (`~/.zshrc` or `~/.bashrc`):**
-```bash
-export M2_HOME=/opt/apache-maven-3.8.x
-export PATH=$M2_HOME/bin:$PATH
-```
+If Maven cannot reach any registry at all, copy the pre-populated `.m2/repository` folder from the team shared drive before running the setup script:
 
-### 1.3 Local Maven Repository Setup (No Internet)
+- Windows: `C:\Users\<you>\.m2\repository`
+- macOS/Linux: `~/.m2/repository`
 
-Since machines have no internet, the local `.m2` cache must be seeded from the team's shared drive.
-
-1. Copy the pre-populated `repository/` folder from the shared drive into:
-   - Windows: `C:\Users\<you>\.m2\repository`
-   - macOS/Linux: `~/.m2/repository`
-
-2. Add the offline flag to `~/.m2/settings.xml` so Maven never tries the internet:
+Then add the offline flag to `~/.m2/settings.xml`:
 
 ```xml
 <settings>
   <offline>true</offline>
-
-  <!-- If your team uses a local Nexus/GitLab Package Registry mirror, add here -->
   <mirrors>
     <mirror>
-      <id>internal-mirror</id>
+      <id>internal</id>
       <mirrorOf>*</mirrorOf>
-      <url>http://your-internal-nexus:8081/repository/maven-public/</url>
+      <url>http://your-nexus:8081/repository/maven-public/</url>
     </mirror>
   </mirrors>
 </settings>
 ```
 
-### 1.4 ChromeDriver (for Selenium tests)
+### ChromeDriver
 
-ChromeDriver is bundled in the repo at `shared-core/selenium-base/drivers/`.  
-No separate download needed. The framework reads it via `WebDriverManager` fallback to the local path.
+Bundled in the repo at `shared-core/selenium-base/drivers/`. No download needed.
 
 ---
 
-## 2. IntelliJ IDEA Setup
+## 2. First-Time Setup Script
 
-### 2.1 Install Plugins
+Run **once** after cloning, **before opening any IDE**.
 
-Go to **File → Settings → Plugins** (Windows/Linux) or **IntelliJ IDEA → Preferences → Plugins** (macOS).
+```bash
+# macOS / Linux
+chmod +x setup.sh && ./setup.sh
 
-Install each plugin below. If the Marketplace tab doesn't load (no internet), use **Install Plugin from Disk** and load the `.jar` from the shared drive.
+# Windows
+setup.bat
+```
 
-| Plugin | Purpose | Install from Marketplace ID |
-|--------|---------|----------------------------|
-| **Cucumber for Java** | Gherkin syntax highlighting, step navigation, run configs | `gherkin` |
-| **Gherkin** | `.feature` file support (auto-installed with Cucumber plugin) | `gherkin` |
-| **Maven Helper** | Visualise dependency tree, run Maven goals from right-click | `MavenRunHelper` |
-| **JUnit** | JUnit 4 test runner support (usually bundled) | built-in |
-| **EnvFile** | Load `.env` files as run configuration environment | `com.intellij.plugins.envfile` |
+### What the script does
 
-After installing, **restart IntelliJ**.
+| Step | Command | Why |
+|------|---------|-----|
+| 1 | Checks `java -version` | Fails fast if Java 11 is missing |
+| 2 | `./mvnw install -pl shared-core/...` | Installs cucumber-base, selenium-base, api-base, testdata-base into `.m2` |
+| 3 | `./mvnw install -pl team-a-system1` | Builds and installs `tests.jar` + `test-sources.jar` — team-b depends on these |
+| 4 | `./mvnw compile -pl team-b-system2` | Verifies cross-team dependency resolves correctly |
+| 5 | Prints "Setup complete — NOW open your IDE" | Explicit signal that it's safe to open the IDE |
 
-> **Offline install:** From the shared drive, copy plugin `.zip` files and use  
-> Plugins → ⚙️ → Install Plugin from Disk.
+### Expected output (last few lines)
 
-### 2.2 Import the Project
+```
+[OK] shared-core installed
+[OK] team-a-system1 installed
+    • team-a-system1-1.0.0-SNAPSHOT.jar
+    • team-a-system1-1.0.0-SNAPSHOT-tests.jar
+    • team-a-system1-1.0.0-SNAPSHOT-test-sources.jar
+[OK] team-b-system2 compiles successfully
 
-1. **File → Open** → select the root folder of the repo (where the parent `pom.xml` lives).
-2. IntelliJ detects the Maven multi-module project and shows a popup — click **"Open as Maven Project"** (or **Trust Project** if prompted).
-3. Wait for the Maven sync to complete — watch the progress bar at the bottom.  
-   If it fails, see [§2.8 Troubleshooting](#28-intellij-troubleshooting).
+══════════════════════════════════════════
+  Setup complete! Dependencies installed.
+══════════════════════════════════════════
+  NEXT — open your IDE NOW
+```
 
-**Module structure you should see in the Project panel:**
+If the script fails, check [§9 Common Errors](#9-common-errors--fixes) before opening the IDE.
+
+---
+
+## 3. IntelliJ IDEA
+
+### 3.1 What Auto-Configures on Import
+
+The `.idea/` folder is committed to the repo. IntelliJ reads it on first open and applies everything below **with no manual steps**.
+
+| File | What it sets | Without it |
+|------|-------------|-----------|
+| `.idea/misc.xml` | Project SDK = Java 11 | You'd see "Project SDK not set" |
+| `.idea/compiler.xml` | Bytecode target = 11 for all modules | Modules may compile at wrong level |
+| `.idea/encodings.xml` | UTF-8 for all source + feature files | Windows machines default to CP1252, garbling feature file text |
+| `.idea/vcs.xml` | Git root mapped | No Git integration on first open |
+| `.idea/codeStyles/` | 4-space Java, 2-space Gherkin | Team inconsistency in diffs |
+| `.idea/cucumber.xml` | Glue = `com.teama.steps.base + com.teama.steps + com.teamb.steps` | Shared steps show red/undefined in feature files |
+| `.idea/runConfigurations/` | System1, System2, Bootstrap configs in toolbar | Every developer creates their own run config manually |
+
+### 3.2 Open the Project
+
+```
+File → Open → select the repo root folder (where pom.xml lives)
+```
+
+1. IntelliJ shows a popup — click **"Open as Maven Project"** (or **"Trust Project"** first if prompted).
+2. Maven sync starts automatically — watch the progress bar at the bottom.
+3. When sync completes, all modules appear in the Project panel:
+
 ```
 shared-automation-framework          ← root
 ├── shared-core
@@ -141,574 +182,450 @@ shared-automation-framework          ← root
 └── team-b-system2
 ```
 
-If modules are missing, right-click `pom.xml` → **Add as Maven Project**.
+That's it. Run configs are in the toolbar, step navigation works, SDK is set.
 
-### 2.3 Configure JDK
+> If modules are missing: right-click any `pom.xml` → **Add as Maven Project**.
 
-1. **File → Project Structure → Project**
-2. Set **SDK** to Java 11 (if not shown, click **Add SDK → JDK** and point to your JDK 11 home).
-3. Set **Language level** to `11 - Local variable syntax for lambda parameters`.
-4. Go to **File → Project Structure → Modules**, select each module, confirm **Language level = 11**.
-5. Click **Apply → OK**.
+### 3.3 Plugins (offline machines)
 
-Verify the compiler target matches:
-- **File → Settings → Build, Execution, Deployment → Compiler → Java Compiler**
-- Set **Project bytecode version** to `11`.
+IntelliJ needs two plugins for Cucumber step navigation. These are **not auto-installed** — check once after first open.
 
-### 2.4 Configure Maven
+**File → Settings → Plugins → Installed** — confirm these are present:
 
-1. **File → Settings → Build, Execution, Deployment → Build Tools → Maven**
+| Plugin | Purpose |
+|--------|---------|
+| **Cucumber for Java** | Gherkin highlighting, `Ctrl+Click` step navigation, run configs |
+| **Gherkin** | `.feature` file language support (usually auto-installed with Cucumber plugin) |
+
+If missing and the Marketplace doesn't load (no internet):
+1. Get the plugin `.zip` files from the shared drive.
+2. Plugins panel → ⚙️ icon → **Install Plugin from Disk** → select the `.zip`.
+3. Restart IntelliJ.
+
+Optional but useful:
+
+| Plugin | Purpose |
+|--------|---------|
+| **Maven Helper** | Right-click `pom.xml` → Analyze Dependencies, run goals |
+| **EnvFile** | Load `.env` files into run configurations |
+
+### 3.4 Maven Settings (offline machines)
+
+The Maven wrapper handles the Maven version automatically. You only need to check this once for offline mode.
+
+**File → Settings → Build, Execution, Deployment → Build Tools → Maven**
 
 | Setting | Value |
 |---------|-------|
-| **Maven home path** | Path to your Maven install (e.g., `C:\tools\apache-maven-3.8.x`) |
+| **Maven home path** | `Use Maven wrapper` (select from dropdown) |
 | **User settings file** | `C:\Users\<you>\.m2\settings.xml` |
-| **Local repository** | `C:\Users\<you>\.m2\repository` |
-| **Work offline** | ✅ Checked (government machine — no internet) |
-| **Use plugin registry** | ✅ Checked |
+| **Work offline** | ✅ Check this on government machines |
+| **JDK for importer** | Java 11 |
 
-2. Under **Importing**, set:
-   - **JDK for importer**: Java 11
-   - **VM options for importer**: `-Xmx1024m`
+Click **Apply → OK** → click ↻ Refresh in the Maven panel.
 
-3. Click **Apply → OK**, then click the **Refresh** (↻) button in the Maven panel.
+### 3.5 Run Configs — Pre-Built
 
-### 2.5 Cucumber Run Configuration
+Run configurations are committed in `.idea/runConfigurations/` and appear in the toolbar automatically.
 
-IntelliJ needs a run configuration to execute Cucumber tests with the correct tags and glue.
+| Config name | What it runs | Module |
+|-------------|-------------|--------|
+| **System1 — All Tests (@sys1 or @shared)** | Full team-a test suite | team-a-system1 |
+| **System2 — All Tests (@sys2 or @shared)** | Full team-b test suite | team-b-system2 |
+| **System2 — Shared Tests Only (@shared)** | Only shared scenarios on team-b | team-b-system2 |
+| **Bootstrap — First Time Build** | Re-runs the shared-core + team-a install (useful after git pull) | root |
 
-#### Option A — Run via JUnit Runner Class (recommended)
+**Running a config:** Select from the dropdown → click ▶ or press `Shift+F10`.
 
-This is the simplest method. The runner class already has all settings baked in.
+**Changing tags without editing code:**  
+Run → Edit Configurations → select config → VM options → add `-Dcucumber.filter.tags=@login`
 
-1. Open `team-a-system1/src/test/java/com/teama/runner/System1TestRunner.java`
-2. Click the **green play button** ▶ next to the class declaration.
-3. IntelliJ auto-creates a JUnit run config for it.
+**Running a single scenario:**  
+Open any `.feature` file → click ▶ in the gutter next to a `Scenario:` line → IntelliJ creates a temporary run config for just that scenario.
 
-To customise tags without editing code, edit the run config:
-- **Run → Edit Configurations → JUnit → System1TestRunner**
-- Under **VM options**, add: `-Dcucumber.filter.tags=@sys1`
+> Shared feature files loaded from `classpath:features/shared` must be run via the runner class, not directly from the feature file editor.
 
-#### Option B — Dedicated Cucumber Run Configuration
+### 3.6 Debugging Tests
 
-1. **Run → Edit Configurations → + → Cucumber Java**
+1. Open any step definition file → click in the gutter to set a breakpoint (red dot).
+2. Select a run config → click the 🐛 debug button (or `Shift+F9`).
+3. IntelliJ pauses at your breakpoint.
 
-| Field | Team A Value | Team B Value |
-|-------|-------------|-------------|
-| **Name** | `System1 - All Tests` | `System2 - All Tests` |
-| **Main class** | `io.cucumber.core.cli.Main` | same |
-| **Glue** | `com.teama.steps.base com.teama.steps com.sharedframework.cucumber` | `com.teama.steps.base com.teamb.steps com.sharedframework.cucumber` |
-| **Feature or folder path** | `src/test/resources/features` | `src/test/resources/features` |
-| **Working directory** | `$MODULE_WORKING_DIR$` | `$MODULE_WORKING_DIR$` |
-| **Use classpath of module** | `team-a-system1` | `team-b-system2` |
-| **Tags** | `@sys1 or @shared` | `@sys2 or @shared` |
+**Keyboard shortcuts:**
 
-2. Under **VM options** add:
-```
--Dtest.username=testuser -Dtest.password=testpass
-```
+| Key | Action |
+|-----|--------|
+| `F8` | Step over |
+| `F7` | Step into |
+| `Shift+F8` | Step out |
+| `F9` | Resume |
+| `Alt+F8` | Evaluate expression |
 
-3. Click **Apply → OK**.
+**Inspect which page object is active:**  
+In the Debug Variables panel → evaluate `PageObjectRegistry.get()` → shows `System1PageObjectProvider` or `System2PageObjectProvider` depending on which runner triggered the test.
 
-#### Option C — Run a Single Feature File
+**Debug a specific scenario:**  
+Open the `.feature` file → click 🐛 in the gutter next to the `Scenario:` line.
 
-1. Open any `.feature` file.
-2. Click the ▶ button next to a specific `Scenario:` or `Feature:` line.
-3. IntelliJ creates a temporary Cucumber run config for just that scenario.
+### 3.7 IntelliJ Troubleshooting
 
-> For shared feature files loaded from `classpath:features/shared`, you must run them through the runner class — IntelliJ cannot directly run classpath-referenced features.
-
-### 2.6 Run Tests via IntelliJ
-
-**Full test suite for Team A:**
-```
-Right-click team-a-system1/pom.xml → Run Maven → test
-```
-
-**Full test suite for Team B:**
-```
-Right-click team-b-system2/pom.xml → Run Maven → test
-```
-
-**Run specific tags via Maven panel:**
-1. Open the Maven panel (right side bar).
-2. Expand `team-a-system1 → Lifecycle → test`.
-3. Right-click `test` → **Run Maven Build** → add to **Command line**:
-   ```
-   -Dcucumber.filter.tags="@login"
-   ```
-
-**Run via Runner class (fastest for development):**
-1. Open `System1TestRunner.java` or `System2TestRunner.java`.
-2. Press **Shift+F10** or click ▶ in the gutter.
-
-### 2.7 Debugging Tests
-
-1. Set a breakpoint in any step definition class (e.g., `SharedLoginSteps.java` line 35).
-2. Open the runner class → click the **bug icon** 🐛 next to the class.
-3. IntelliJ starts Cucumber in debug mode — it pauses at your breakpoint.
-4. Use **F8** (step over), **F7** (step into), **F9** (resume).
-
-**Debug a specific scenario:**
-- Open the `.feature` file → click 🐛 next to the `Scenario:` line.
-
-**Inspect `PageObjectRegistry` state:**
-- In the Debug panel → Variables → evaluate `PageObjectRegistry.get()` to see which provider is active.
-
-### 2.8 IntelliJ Troubleshooting
-
-| Problem | Fix |
-|---------|-----|
-| `Cannot resolve symbol 'Cucumber'` | Maven sync failed — click ↻ Reload in Maven panel, or **File → Invalidate Caches → Restart** |
-| Feature file shows `Step 'xxx' is not defined` | Plugin not installed, or glue path wrong. Check Cucumber plugin is active and run config glue matches runner |
-| `team-a-system1-tests.jar` not found | Run `mvn install` on `team-a-system1` first so the test-jar is in `.m2` |
-| `Module 'team-b-system2' not found in project` | Right-click `team-b-system2/pom.xml` → Add as Maven Project |
-| `Error: release version 11 not supported` | JDK set to Java 8. Change Project SDK to Java 11 in Project Structure |
-| Tests pass in Maven but not in IntelliJ | Working directory mismatch. Set **Working directory = `$MODULE_WORKING_DIR$`** in run config |
-| `classpath:features/shared not found` | `team-a-system1` main JAR not on classpath. Run `mvn install -pl team-a-system1` first |
-| Maven panel is empty | **View → Tool Windows → Maven** to open it |
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| Red errors everywhere on first open | Setup script wasn't run before opening IDE | Close IDE, run `setup.bat`/`setup.sh`, reopen |
+| `Cannot resolve symbol 'Cucumber'` | Maven sync failed | Click ↻ in Maven panel, or **File → Invalidate Caches → Restart** |
+| Step shows red/undefined in feature file | `.idea/cucumber.xml` not loaded yet | Restart IntelliJ; confirm Cucumber plugin is installed |
+| `team-a-system1-tests.jar` not found | setup script didn't complete | Run `./mvnw install -pl team-a-system1 -DskipTests` then ↻ Maven |
+| `Error: release version 11 not supported` | JDK is not Java 11 | File → Project Structure → SDK → set to Java 11 |
+| Tests pass in Maven but fail in IntelliJ | Working directory mismatch | Edit run config → set **Working directory = `$MODULE_WORKING_DIR$`** |
+| `classpath:features/shared` not found | team-a main JAR not on classpath | `./mvnw install -pl team-a-system1 -DskipTests` then ↻ Maven |
+| Maven panel is empty | Tool window not open | **View → Tool Windows → Maven** |
+| Run configs not in toolbar | `.idea/runConfigurations/` not loaded | File → Invalidate Caches → Restart |
 
 ---
 
-## 3. VS Code Setup
+## 4. VS Code
 
-### 3.1 Install Extensions
+### 4.1 What Auto-Configures on Open
 
-Open the **Extensions** panel (`Ctrl+Shift+X` / `Cmd+Shift+X`) and install:
+The `.vscode/` folder is committed to the repo. VS Code reads it the moment you open the folder.
 
-| Extension | Publisher | ID | Purpose |
-|-----------|-----------|----|---------|
-| **Extension Pack for Java** | Microsoft | `vscjava.vscode-java-pack` | Java language support, debugger, test runner |
-| **Language Support for Java** | Red Hat | `redhat.java` | Core Java LSP (included in pack above) |
-| **Debugger for Java** | Microsoft | `vscjava.vscode-java-debug` | Debug support (included in pack) |
-| **Test Runner for Java** | Microsoft | `vscjava.vscode-java-test` | Run/debug JUnit tests (included in pack) |
-| **Maven for Java** | Microsoft | `vscjava.vscode-maven` | Maven project support (included in pack) |
-| **Cucumber (Gherkin) Full Support** | Alexander Krechik | `alexkrechik.cucumberautocomplete` | Feature file highlighting, step navigation |
-| **GitLens** | GitKraken | `eamodio.gitlens` | Optional — Git history/blame |
+| File | What it sets | Without it |
+|------|-------------|-----------|
+| `.vscode/extensions.json` | Shows "Install recommended extensions?" popup | You'd manually install each extension |
+| `.vscode/settings.json` | `java.import.maven.enabled: true` (auto-imports all Maven modules), Cucumber step paths for both team-a and team-b, source attachment for shared steps JAR | Modules not imported, step navigation broken |
+| `.vscode/launch.json` | 4 debug configs with correct `sourcePaths` | You'd create debug configs manually |
+| `.vscode/tasks.json` | All test tasks in command palette, Bootstrap as default build task | No `Ctrl+Shift+B` shortcut |
+| `.editorconfig` | Consistent tab/encoding across all editors | Diff noise from formatting differences |
 
-**Offline install (no internet):**
-1. Download the `.vsix` file for each extension from the shared drive.
-2. In VS Code: Extensions panel → `...` (More Actions) → **Install from VSIX** → select the file.
+### 4.2 Open the Project
 
-### 3.2 Open the Project
-
-1. **File → Open Folder** → select the root repo folder (where parent `pom.xml` lives).
-2. VS Code detects Java and Maven — the Java Projects panel populates automatically.
-3. If prompted `"Do you trust the authors of the files in this folder?"` → click **Yes, I trust the authors**.
-4. Wait for the Java Language Server to initialise (watch the progress indicator bottom-left).
-
-**Multi-root workspace (optional — if teams have separate repo clones):**
-
-Create `automation.code-workspace` in a parent folder:
-```json
-{
-  "folders": [
-    { "name": "team-a-system1", "path": "./team-a-system1" },
-    { "name": "team-b-system2", "path": "./team-b-system2" },
-    { "name": "shared-core",    "path": "./shared-core" }
-  ]
-}
+```bash
+code .
 ```
-Open it with **File → Open Workspace from File**.
 
-### 3.3 Configure Java Runtime
+On first open VS Code does three things automatically:
 
-1. Press `Ctrl+Shift+P` → type `Java: Configure Java Runtime`.
-2. Confirm **Java 11** is selected for the project.
-3. If Java 11 is not listed, click **+ Add JDK** and browse to your JDK 11 installation.
+1. **Extension popup** — "This workspace has extension recommendations. Do you want to install them?" → click **Install**. This installs:
+   - `vscjava.vscode-java-pack` (Java Language Server, Debugger, Test Runner, Maven)
+   - `alexkrechik.cucumberautocomplete` (Cucumber step navigation)
+   - `EditorConfig.EditorConfig`
+   - `redhat.vscode-xml`
 
-Or add directly to `settings.json`:
+2. **Maven import** — `java.import.maven.enabled: true` in `settings.json` triggers automatic multi-module import. All modules (`team-a-system1`, `team-b-system2`, `shared-core/*`) appear in the Java Projects panel.
+
+3. **Java indexing** — Language Server builds a symbol index. A progress bar appears bottom-left. Step navigation and Test Explorer are available after this completes (~1 min).
+
+> **Trust prompt:** If asked "Do you trust the authors?" → click **Yes, I trust the authors**.
+
+### 4.3 Extensions (offline machines)
+
+If the extension Marketplace doesn't load (no internet), install from `.vsix` files on the shared drive:
+
+Extensions panel → `...` (More Actions) → **Install from VSIX** → select each file:
+
+| Extension ID | File to install |
+|---|---|
+| `vscjava.vscode-java-pack` | `vscjava.vscode-java-pack-*.vsix` |
+| `alexkrechik.cucumberautocomplete` | `alexkrechik.cucumberautocomplete-*.vsix` |
+| `EditorConfig.EditorConfig` | `EditorConfig.EditorConfig-*.vsix` |
+
+Reload VS Code after installing.
+
+### 4.4 Update Java Path for Your Machine
+
+`.vscode/settings.json` has a Java runtime path that may need to match your machine's JDK location.
+
+Open `.vscode/settings.json` and update `java.configuration.runtimes`:
+
 ```json
 "java.configuration.runtimes": [
   {
     "name": "JavaSE-11",
-    "path": "C:\\Program Files\\Java\\jdk-11",
+    "path": "C:\\Program Files\\Java\\jdk-11",    // Windows
+    // "path": "/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home",  // macOS
+    // "path": "/usr/lib/jvm/java-11-openjdk-amd64",                          // Linux
     "default": true
   }
 ]
 ```
 
-Verify the compiler level:
-- `Ctrl+Shift+P` → `Java: Open Project Settings` → confirm source/target is `11`.
-
-### 3.4 Configure Maven in VS Code
-
-1. `Ctrl+Shift+P` → `Maven: Edit Settings` → opens your `~/.m2/settings.xml`.
-2. Confirm `<offline>true</offline>` is set (see §1.3 above).
-
-Add Maven executable path to `settings.json` if `mvn` is not on your PATH:
-```json
-"maven.executable.path": "C:\\tools\\apache-maven-3.8.x\\bin\\mvn.cmd"
-```
-
-**Trigger Maven sync:**
-- Open the **Maven** panel (left sidebar → Explorer → Maven).
-- Click ↻ on the root project to reload all modules.
-- You should see all modules listed: `shared-automation-framework`, `team-a-system1`, `team-b-system2`, etc.
-
-### 3.5 settings.json Configuration
-
-Create or update `.vscode/settings.json` at the **root of the repo**:
-
-```json
-{
-  // ── Java ──────────────────────────────────────────────────────────────
-  "java.configuration.runtimes": [
-    {
-      "name": "JavaSE-11",
-      "path": "C:\\Program Files\\Java\\jdk-11",
-      "default": true
-    }
-  ],
-  "java.compile.nullAnalysis.mode": "automatic",
-  "java.sources.organizeImports.staticStarThreshold": 5,
-
-  // ── Maven ─────────────────────────────────────────────────────────────
-  "maven.executable.path": "C:\\tools\\apache-maven-3.8.x\\bin\\mvn.cmd",
-  "maven.terminal.useJavaHome": true,
-  "java.configuration.maven.userSettings": "C:\\Users\\<you>\\.m2\\settings.xml",
-
-  // ── Test Runner ───────────────────────────────────────────────────────
-  "java.test.config": {
-    "workingDirectory": "${workspaceFolder}",
-    "vmArgs": [
-      "-Dtest.username=testuser",
-      "-Dtest.password=testpass",
-      "-Dcucumber.filter.tags=@sys1 or @shared"
-    ]
-  },
-
-  // ── Cucumber Extension ────────────────────────────────────────────────
-  "cucumberautocomplete.steps": [
-    "team-a-system1/src/test/java/**/*.java",
-    "team-b-system2/src/test/java/**/*.java",
-    "shared-core/**/src/test/java/**/*.java"
-  ],
-  "cucumberautocomplete.syncfeatures": "team-a-system1/src/main/resources/features/**/*.feature",
-  "cucumberautocomplete.strictGherkinCompletion": false,
-  "cucumberautocomplete.onTypeDelay": 300,
-
-  // ── File associations ─────────────────────────────────────────────────
-  "files.associations": {
-    "*.feature": "cucumber"
-  },
-
-  // ── Editor ────────────────────────────────────────────────────────────
-  "editor.tabSize": 4,
-  "editor.insertSpaces": true,
-  "files.encoding": "utf8",
-  "editor.formatOnSave": false
-}
-```
-
-> **macOS/Linux paths:** Replace `C:\\...` with `/opt/...` or `/usr/local/...` as appropriate.
-
-### 3.6 Cucumber Extension Configuration
-
-The **Cucumber (Gherkin) Full Support** extension needs to know where step definitions live so it can navigate from `.feature` steps to Java code.
-
-Create `.vscode/cucumberautocomplete.json` (optional, alternative to settings.json):
-```json
-{
-  "steps": [
-    "team-a-system1/src/test/java/**/*.java",
-    "team-b-system2/src/test/java/**/*.java"
-  ],
-  "pages": [],
-  "syncfeatures": "**/*.feature",
-  "strictGherkinCompletion": false
-}
-```
-
-**Navigating from feature to step:**
-- `Ctrl+Click` on a step in a `.feature` file → jumps to the matching `@Given`/`@When`/`@Then` method.
-- For steps in `team-a-system1-tests.jar`, the extension resolves them from `team-a-system1/src/test/java/com/teama/steps/base/`.
-
-**Note on shared steps:** Steps defined in `SharedLoginSteps.java` appear in both team-a and team-b feature files. The extension resolves them from team-a's source since it's in the same workspace.
-
-### 3.7 Run & Debug Tests
-
-#### Run all tests for a module
-
-In the Maven panel (left sidebar):
-```
-Maven → team-a-system1 → Lifecycle → test → ▶ Run
-```
-
-Or from the terminal:
+Find your Java path:
 ```bash
-mvn test -pl team-a-system1
-mvn test -pl team-b-system2
+# Windows
+where java
+# macOS
+/usr/libexec/java_home -v 11
+# Linux
+update-alternatives --list java
 ```
 
-#### Run via Test Explorer
+### 4.5 Run & Debug Tests
 
-1. Open the **Testing** panel (beaker icon in the left sidebar, or `Ctrl+Shift+P` → `Testing: Focus on Test Explorer View`).
-2. VS Code scans for JUnit classes — you should see `System1TestRunner` and `System2TestRunner`.
-3. Click ▶ next to any runner to execute it.
-4. Click 🐛 next to any runner to debug it.
+#### From the Test Explorer (easiest)
 
-#### Run a Single Feature Scenario
+1. Open the **Testing** panel — beaker icon in the left sidebar.
+2. `System1TestRunner` and `System2TestRunner` appear after Java indexing.
+3. Click ▶ to run, 🐛 to debug.
 
-1. Open a `.feature` file.
-2. A **Run Test | Debug Test** code lens appears above each `Scenario:` — click to run just that scenario.
-   > Requires the JUnit runner class to be correctly configured as the entry point.
+#### From the command palette tasks
 
-#### Create a Launch Configuration for Debugging
+`Ctrl+Shift+P` → **Tasks: Run Task** → choose:
 
-Create `.vscode/launch.json`:
-```json
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "java",
-      "name": "Debug System1 Tests",
-      "request": "launch",
-      "mainClass": "org.junit.runner.JUnitCore",
-      "args": "com.teama.runner.System1TestRunner",
-      "projectName": "team-a-system1",
-      "vmArgs": "-Dtest.username=testuser -Dtest.password=testpass",
-      "cwd": "${workspaceFolder}/team-a-system1"
-    },
-    {
-      "type": "java",
-      "name": "Debug System2 Tests",
-      "request": "launch",
-      "mainClass": "org.junit.runner.JUnitCore",
-      "args": "com.teamb.runner.System2TestRunner",
-      "projectName": "team-b-system2",
-      "vmArgs": "-Dtest.username=testuser -Dtest.password=testpass",
-      "cwd": "${workspaceFolder}/team-b-system2"
-    },
-    {
-      "type": "java",
-      "name": "Debug System1 — login tag only",
-      "request": "launch",
-      "mainClass": "org.junit.runner.JUnitCore",
-      "args": "com.teama.runner.System1TestRunner",
-      "projectName": "team-a-system1",
-      "vmArgs": "-Dcucumber.filter.tags=@login -Dtest.username=testuser",
-      "cwd": "${workspaceFolder}/team-a-system1"
-    }
-  ]
-}
-```
+| Task | What it runs |
+|------|-------------|
+| `Test — System1 All (@sys1 or @shared)` | Full team-a suite |
+| `Test — System2 All (@sys2 or @shared)` | Full team-b suite |
+| `Test — System2 Shared Only (@shared)` | Shared scenarios on team-b |
+| `Test — System1 Login Tag Only` | @login tag only |
+| `Test — All Modules` | Both teams, fail-at-end |
+| `Rebuild team-a test-jar` | After editing shared steps — regenerates JAR |
+| `Bootstrap — First Time Build` | Re-run the initial build (after git pull) |
 
-Press **F5** to start debugging with the selected configuration.
+`Ctrl+Shift+B` runs the **Bootstrap** task directly (useful after pulling changes that update shared-core).
 
-**Setting breakpoints:**
-- Open `SharedLoginSteps.java` → click in the gutter left of any line → red dot appears.
-- Run in debug mode → VS Code pauses at the breakpoint.
-- Hover over variables to inspect them, or open the **Debug Console** and type `PageObjectRegistry.get()`.
+#### Debug with launch configs
 
-### 3.8 VS Code Troubleshooting
+Press `F5` → choose a configuration from `.vscode/launch.json`:
 
-| Problem | Fix |
-|---------|-----|
-| Java Language Server not starting | `Ctrl+Shift+P` → `Java: Clean Java Language Server Workspace` → restart |
-| No step navigation in `.feature` files | Check `cucumberautocomplete.steps` path in `settings.json` is correct |
-| Test Explorer shows no tests | Wait for indexing to finish; or `Ctrl+Shift+P` → `Java: Force Java Compilation` |
-| `team-a-system1-tests.jar` not resolved | Run `mvn install -pl team-a-system1` in terminal first |
-| Maven panel is empty | `Ctrl+Shift+P` → `Maven: Update Maven Project` |
-| `Cannot find symbol SharedLoginSteps` in team-b | Test-jar not installed. Run: `mvn install -pl team-a-system1 -DskipTests` |
-| Feature file gherkin errors on shared steps | Steps live in JAR, not source. Extension may not resolve them — use `team-a-system1` source as reference |
-| Encoding issues with `.feature` files | Ensure `"files.encoding": "utf8"` in settings.json |
-| `ClassNotFoundException: System1TestRunner` | Module not built. `Ctrl+Shift+P` → `Java: Force Java Compilation` |
-| Debugger not hitting breakpoints | Source attachment missing. Right-click JAR in Java Projects panel → Attach Source |
+| Config | Module | Tags |
+|--------|--------|------|
+| System1 — All Tests | team-a-system1 | @sys1 or @shared |
+| System2 — All Tests | team-b-system2 | @sys2 or @shared |
+| System2 — Shared Only | team-b-system2 | @shared |
+| System1 — Login Tag Only | team-a-system1 | @login |
+
+Set a breakpoint in any `.java` file → press F5 → VS Code pauses at the line. Works in shared step files (`SharedLoginSteps.java`) because `sourcePaths` in `launch.json` includes both team-a and team-b source roots.
+
+### 4.6 VS Code Troubleshooting
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| Red errors everywhere on first open | Setup script wasn't run first | Close VS Code, run `setup.bat`/`setup.sh`, reopen |
+| Extension popup didn't appear | Extensions already installed, or dismissed | `Ctrl+Shift+P` → **Extensions: Show Recommended Extensions** |
+| Java Language Server not starting | Extension not installed | Confirm `vscjava.vscode-java-pack` is installed and enabled |
+| Maven modules not imported | `java.import.maven.enabled` not applied | `Ctrl+Shift+P` → **Java: Import Java Projects** |
+| No step navigation in feature files | Cucumber extension not installed, or path mismatch | Confirm `alexkrechik.cucumberautocomplete` installed; `Ctrl+Shift+P` → **Reload Window** |
+| Shared steps still not found after reload | Glob path wrong for your workspace root | See [§5 Step Navigation](#5-step-navigation--go-to-definition) for path fix |
+| Test Explorer shows no tests | Java indexing still running | Wait for progress bar to finish; `Ctrl+Shift+P` → **Java: Force Java Compilation** |
+| Debugger shows decompiled bytecode instead of source | Sources JAR not attached | Run `./mvnw package -pl team-a-system1 -DskipTests` then **Reload Window** |
+| `ClassNotFoundException` in test run | Module not compiled | `Ctrl+Shift+P` → **Java: Force Java Compilation** |
 
 ---
 
-## 4. First-Time Build (both IDEs)
+## 5. Step Navigation — "Go to Definition"
 
-Run these commands **once** on a fresh clone before opening the IDE. This seeds the local `.m2` cache and installs the shared JAR.
+`Ctrl+Click` on any step in any `.feature` file should jump to the correct Java source file.
 
-```bash
-# Step 1 — build and install shared-core modules
-mvn install -pl shared-core/cucumber-base -am -DskipTests
-mvn install -pl shared-core/selenium-base -am -DskipTests
-mvn install -pl shared-core/api-base      -am -DskipTests
-mvn install -pl shared-core/testdata-base -am -DskipTests
+| Step type | Expected destination |
+|-----------|---------------------|
+| `Given the user is on the login page` (shared) | `team-a-system1/.../SharedLoginSteps.java:33` |
+| `When the user enters valid credentials` (shared) | `team-a-system1/.../SharedLoginSteps.java:40` |
+| `When user navigates to portfolio dashboard` (team-b) | `team-b-system2/.../System2LoginSteps.java` |
+| `When user navigates to the document repository` (team-a) | `team-a-system1/.../System1LoginSteps.java` |
 
-# Step 2 — build team-a and install its test-jar into local .m2
-# (team-b depends on this test-jar)
-mvn install -pl team-a-system1 -DskipTests
+**How it works:**
 
-# Step 3 — build team-b (now team-a test-jar is available)
-mvn compile -pl team-b-system2
+- **IntelliJ:** `.idea/cucumber.xml` sets global glue = `com.teama.steps.base + com.teama.steps + com.teamb.steps`. The Cucumber plugin scans all these packages across all open modules and builds a step index. Since team-a is a module in the same project, it resolves from source directly.
 
-# Verify all tests compile and run
-mvn test -pl team-a-system1
-mvn test -pl team-b-system2
-```
+- **VS Code:** `.vscode/settings.json` sets `cucumberautocomplete.steps` to glob both `team-a-system1/src/test/java/com/teama/steps/base/*.java` and `team-b-system2/src/test/java/com/teamb/steps/*.java`. The extension indexes all `@Given`/`@When`/`@Then` annotations from both paths.
 
-**Expected output:**
-```
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-```
+**If step navigation doesn't work** — see `STEP_NAVIGATION.md` for the full troubleshooting guide including the JAR-only scenario (team-b cloned without team-a source).
 
 ---
 
-## 5. Running Tests from Terminal
+## 6. Running Tests from Terminal
 
-### Run specific tags
+Use `./mvnw` (not `mvn`) to ensure the correct Maven version is used.
+
 ```bash
-# Only shared login tests
-mvn test -pl team-a-system1 -Dcucumber.filter.tags="@login"
+# Team A — all tests
+./mvnw test -pl team-a-system1
 
-# Only system2-specific tests
-mvn test -pl team-b-system2 -Dcucumber.filter.tags="@sys2"
+# Team B — all tests
+./mvnw test -pl team-b-system2
 
-# Shared tests on team-b
-mvn test -pl team-b-system2 -Dcucumber.filter.tags="@shared"
+# Filter by tag
+./mvnw test -pl team-a-system1 -Dcucumber.filter.tags="@login"
+./mvnw test -pl team-b-system2 -Dcucumber.filter.tags="@sys2"
+./mvnw test -pl team-b-system2 -Dcucumber.filter.tags="@shared"
+./mvnw test -pl team-b-system2 -Dcucumber.filter.tags="@sys2 or @shared"
 
-# Multiple tags
-mvn test -pl team-b-system2 -Dcucumber.filter.tags="@sys2 or @shared"
+# Pass credentials
+./mvnw test -pl team-a-system1 -Dtest.username=admin -Dtest.password=s3cr3t
+
+# Run all modules (don't stop on first failure)
+./mvnw test --fail-at-end
+
+# Rebuild shared steps JAR after editing SharedLoginSteps / SharedSearchSteps
+./mvnw package -pl team-a-system1 -DskipTests
+./mvnw install -pl team-a-system1 -DskipTests
+./mvnw test -pl team-b-system2   # picks up the new shared steps
 ```
 
-### Pass credentials
-```bash
-mvn test -pl team-a-system1 \
-  -Dtest.username=myuser \
-  -Dtest.password=mypass
-```
-
-### Run all modules at once
-```bash
-mvn test --fail-at-end
-```
-
-### Build team-a test-jar (after making changes to shared steps)
-```bash
-mvn package -pl team-a-system1 -DskipTests
-mvn install -pl team-a-system1 -DskipTests
-# Then re-run team-b to pick up the new shared steps
-mvn test -pl team-b-system2
-```
+**Windows:** replace `./mvnw` with `mvnw.cmd`.
 
 ---
 
-## 6. Project Structure Reference
+## 7. Project Structure Reference
 
 ```
 shared-automation-framework/               ← root (parent pom.xml)
 │
+├── .idea/                                 ← IntelliJ auto-config (committed)
+│   ├── misc.xml                           ← JDK 11
+│   ├── compiler.xml                       ← bytecode target 11
+│   ├── encodings.xml                      ← UTF-8
+│   ├── cucumber.xml                       ← global glue paths for step navigation
+│   └── runConfigurations/                 ← pre-built run configs
+│
+├── .vscode/                               ← VS Code auto-config (committed)
+│   ├── settings.json                      ← Maven auto-import, Cucumber step paths
+│   ├── extensions.json                    ← recommended extensions popup
+│   ├── launch.json                        ← debug configs with sourcePaths
+│   └── tasks.json                         ← Maven test tasks
+│
+├── .mvn/wrapper/                          ← Maven wrapper (no Maven install needed)
+│
+├── setup.sh  /  setup.bat                 ← run ONCE after clone, before IDE
+│
 ├── shared-core/
 │   ├── cucumber-base/                     ← ScenarioContext, hooks, base utilities
 │   ├── selenium-base/                     ← WebDriver factory, base page
-│   ├── api-base/                          ← RestAssured setup, API base
+│   ├── api-base/                          ← RestAssured setup
 │   └── testdata-base/                     ← PropertyLoader, test data helpers
 │
-├── team-a-system1/                        ← Team A's automation project
-│   ├── src/main/resources/
-│   │   └── features/shared/               ← ★ Shared feature files (go into main JAR)
-│   │       ├── login_common.feature
-│   │       └── search_common.feature
+├── team-a-system1/                        ← Team A's project (publishes shared steps)
+│   ├── src/main/resources/features/shared/  ← ★ shared .feature files (in main JAR)
 │   └── src/test/java/com/teama/
-│       ├── runner/
-│       │   └── System1TestRunner.java     ← JUnit entry point for Team A
-│       ├── steps/base/                    ← ★ Exported in test-jar (importable by others)
-│       │   ├── SharedLoginSteps.java
+│       ├── runner/System1TestRunner.java
+│       ├── steps/base/                    ← ★ exported in test-jar + test-sources.jar
+│       │   ├── SharedLoginSteps.java      ←   Ctrl+Click from any team-b feature → here
 │       │   ├── SharedSearchSteps.java
-│       │   ├── PageObjectProvider.java    ← Interface
-│       │   └── PageObjectRegistry.java   ← ThreadLocal registry
-│       ├── steps/
-│       │   ├── System1Setup.java          ← @Before/@After hooks for System1
-│       │   ├── System1LoginSteps.java     ← Gov-portal-specific steps
-│       │   └── System1PageObjectProvider.java
-│       └── pages/
-│           ├── System1LoginPage.java
-│           └── System1SearchPage.java
+│       │   ├── PageObjectProvider.java    ←   interface all teams implement
+│       │   └── PageObjectRegistry.java   ←   ThreadLocal — how step wiring works
+│       └── steps/                         ← local to team-a (not exported)
+│           ├── System1Setup.java
+│           ├── System1LoginSteps.java
+│           └── System1PageObjectProvider.java
 │
-└── team-b-system2/                        ← Team B's automation project
+└── team-b-system2/                        ← Team B's project (imports shared steps)
     └── src/test/java/com/teamb/
-        ├── runner/
-        │   └── System2TestRunner.java     ← JUnit entry point for Team B
-        ├── steps/
-        │   ├── System2Setup.java          ← @Before/@After hooks for System2
-        │   ├── System2LoginSteps.java     ← Financial-dashboard-specific steps
-        │   └── System2PageObjectProvider.java
-        └── pages/
-            ├── System2LoginPage.java
-            └── System2SearchPage.java
+        ├── runner/System2TestRunner.java
+        └── steps/                         ← local to team-b (not exported)
+            ├── System2Setup.java
+            ├── System2LoginSteps.java
+            └── System2PageObjectProvider.java
 ```
-
-**Key rule:** Steps in `com.teama.steps.base` are exported; steps in `com.teama.steps` and `com.teamb.steps` are local only.
 
 ---
 
-## 7. Environment Variables & System Properties
+## 8. Environment Variables & System Properties
 
 All properties use `System.getProperty()` with safe defaults — no property file needed for basic runs.
 
 | Property | Default | Description |
 |----------|---------|-------------|
-| `test.username` | `testuser` | Login username for test scenarios |
-| `test.password` | `testpass` | Login password for test scenarios |
-| `cucumber.filter.tags` | (runner default) | Cucumber tag expression to filter which scenarios run |
-| `webdriver.chrome.driver` | auto-detected | Path to ChromeDriver binary (set if auto-detection fails) |
-| `browser.headless` | `false` | Set `true` to run Chrome without a visible window |
-| `base.url` | system-specific | Target application URL (set per environment) |
+| `test.username` | `testuser` | Login username passed to shared login steps |
+| `test.password` | `testpass` | Login password |
+| `cucumber.filter.tags` | runner default | Tag expression — overrides the `tags` in `@CucumberOptions` |
+| `webdriver.chrome.driver` | auto-detected | Path to ChromeDriver binary |
+| `browser.headless` | `false` | `true` = run Chrome without a window |
+| `base.url` | system-specific | Target app URL per environment |
 
-**Set in IntelliJ run config:**
+**IntelliJ run config:**
 ```
-VM options: -Dtest.username=admin -Dtest.password=s3cr3t
+Edit Configurations → VM options:
+-Dtest.username=admin -Dtest.password=s3cr3t
 ```
 
-**Set in VS Code `launch.json`:**
+**VS Code launch.json:**
 ```json
 "vmArgs": "-Dtest.username=admin -Dtest.password=s3cr3t"
 ```
 
-**Set in Maven command:**
+**Terminal:**
 ```bash
-mvn test -Dtest.username=admin -Dtest.password=s3cr3t
+./mvnw test -pl team-a-system1 -Dtest.username=admin -Dtest.password=s3cr3t
 ```
 
 ---
 
-## 8. Common Errors & Fixes
+## 9. Common Errors & Fixes
 
-### `InvalidMethodException: You're not allowed to extend classes that define Step Definitions`
+### Red errors everywhere in the IDE on first open
 
-**Cause:** Cucumber 7 forbids class inheritance for step definition classes.  
-**Fix:** The framework uses `PageObjectRegistry` (ThreadLocal) instead of inheritance. Never extend `SharedLoginSteps` or `SharedSearchSteps`. Create a separate `System2Setup.java` with `@Before` hook instead.
+**Cause:** IDE was opened before `setup.bat` / `setup.sh` completed.  
+**Fix:** Close the IDE. Run the setup script. Wait for "Setup complete". Reopen the IDE.
 
 ---
 
-### `Unsatisfied dependency: interface PageObjectProvider`
+### `Cannot resolve symbol 'Cucumber'` / `Cannot resolve symbol 'Given'`
 
-**Cause:** PicoContainer cannot resolve interface → concrete class injection.  
-**Fix:** This is already solved by the `PageObjectRegistry` pattern. Ensure your team's setup class calls `PageObjectRegistry.set(new YourPageObjectProvider())` in a `@Before(order=0)` method.
+**Cause:** Maven sync failed — test dependencies not on classpath.  
+**Fix:**
+- IntelliJ: click ↻ in the Maven panel, or **File → Invalidate Caches → Restart**
+- VS Code: `Ctrl+Shift+P` → **Java: Import Java Projects**
+
+---
+
+### Shared steps show as undefined (red underline) in `.feature` file
+
+**Cause:** Cucumber plugin glue not configured for `com.teama.steps.base`.  
+**IntelliJ fix:** `.idea/cucumber.xml` should have loaded automatically. Restart IntelliJ. Confirm Cucumber for Java plugin is installed.  
+**VS Code fix:** Confirm `cucumberautocomplete.steps` in `settings.json` includes `team-a-system1/src/test/java/com/teama/steps/base/*.java`. `Ctrl+Shift+P` → **Reload Window**.
+
+---
+
+### `team-a-system1-tests.jar` not found when compiling team-b
+
+**Cause:** Setup script didn't run, or ran but failed at step 3.  
+**Fix:**
+```bash
+./mvnw install -pl team-a-system1 -DskipTests
+```
+Confirm the JAR exists:
+```
+~/.m2/repository/com/sharedframework/team-a-system1/1.0.0-SNAPSHOT/
+  team-a-system1-1.0.0-SNAPSHOT-tests.jar         ← required by team-b
+  team-a-system1-1.0.0-SNAPSHOT-test-sources.jar  ← required for IDE step navigation
+```
+
+---
+
+### `InvalidMethodException: You're not allowed to extend classes that define Step Definitions`
+
+**Cause:** Cucumber 7 forbids inheriting from any class with `@Given`/`@When`/`@Then`.  
+**Fix:** Use the `PageObjectRegistry` pattern instead. Never extend `SharedLoginSteps`. Create a `SystemXSetup.java` with `@Before(order=0)` that calls `PageObjectRegistry.set(new YourProvider())`.
 
 ---
 
 ### `No PageObjectProvider registered for this thread`
 
-**Cause:** `@Before(order=0)` hook is missing or not in the glue path.  
+**Cause:** `@Before(order=0)` hook is missing or its package is not in the runner's `glue`.  
 **Fix:**
-1. Confirm your `SystemXSetup.java` has `@Before(order=0)`.
-2. Confirm the package it's in is listed in your runner's `glue` array.
-3. Example: `System2Setup` is in `com.teamb.steps` → runner must include `"com.teamb.steps"` in glue.
-
----
-
-### `team-a-system1-1.0.0-SNAPSHOT-tests.jar` missing from `.m2`
-
-**Cause:** team-a hasn't been built and installed yet.  
-**Fix:**
-```bash
-mvn install -pl team-a-system1 -DskipTests
+1. Confirm `SystemXSetup.java` exists with `@Before(order=0)`.
+2. Confirm the package is in the runner's glue:
+```java
+glue = {
+    "com.teama.steps.base",
+    "com.teamb.steps",        // ← System2Setup must be in this package
+    "com.sharedframework.cucumber"
+}
 ```
-This creates both the main JAR and the `tests.jar` in `~/.m2/repository/com/sharedframework/team-a-system1/`.
 
 ---
 
-### `classpath:features/shared` — No features found
+### `NullPointerException` — username/password is `null`
 
-**Cause:** Shared feature files are in `src/main/resources/` (not `src/test/resources/`), so they go into the main JAR only if the resources plugin is configured.  
-**Fix:** Confirm `team-a-system1/pom.xml` has this build resource block:
+**Cause:** `PropertyLoader.get(filename, key)` was used. Its first argument is a *filename*, not a key.  
+**Fix:** Use `System.getProperty("test.username", "testuser")` and pass values via `-D` args.
+
+---
+
+### `classpath:features/shared` — no features found at runtime
+
+**Cause:** Shared feature files in `src/main/resources/` aren't being packaged into the main JAR.  
+**Fix:** Confirm `team-a-system1/pom.xml` has:
 ```xml
 <build>
   <resources>
@@ -716,29 +633,17 @@ This creates both the main JAR and the `tests.jar` in `~/.m2/repository/com/shar
   </resources>
 </build>
 ```
-Then rebuild: `mvn install -pl team-a-system1 -DskipTests`.
+Then: `./mvnw install -pl team-a-system1 -DskipTests`
 
 ---
 
-### `NullPointerException` on username/password in shared steps
+### Debugger opens decompiled bytecode instead of source file
 
-**Cause:** `PropertyLoader.get(filename, key)` was used instead of `System.getProperty()`. The first argument to `PropertyLoader.get()` is a filename, not a key.  
-**Fix:** Use `System.getProperty("test.username", "testuser")` and pass values via `-D` VM arguments.
-
----
-
-### Step definition not found for shared step (feature file shows as undefined)
-
-**Cause:** `com.teama.steps.base` is missing from team-b's runner glue configuration.  
-**Fix:** In `System2TestRunner.java`:
-```java
-glue = {
-    "com.teama.steps.base",    // ← this line must be present
-    "com.teamb.steps",
-    "com.sharedframework.cucumber"
-}
-```
+**Cause:** Sources JAR not attached to the tests JAR.  
+**Fix:** `./mvnw package -pl team-a-system1 -DskipTests` generates `test-sources.jar`. VS Code attaches it via the `java.project.referencedLibraries.sources` mapping in `settings.json`. Reload VS Code after rebuilding.  
+For IntelliJ: **File → Project Structure → Libraries** → find `team-a-system1:tests` → add `test-sources.jar` as Sources.
 
 ---
 
-*Generated for internal team use. Update this document when new modules, step packages, or system properties are added.*
+*See also: `STEP_NAVIGATION.md` for the full step-navigation troubleshooting guide.*  
+*Update this document when new modules, glue packages, or system properties are added.*

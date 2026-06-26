@@ -19,10 +19,18 @@ cd shared-automation-repo
 
 ### Step 2 — Run the setup script
 
-**Windows:**
+**Windows — Command Prompt (cmd.exe):**
 ```
 setup.bat
 ```
+
+**Windows — PowerShell:**
+```powershell
+.\setup.bat
+```
+
+> PowerShell requires `.\` before script names. Typing `setup.bat` without it gives
+> "not recognized" error. Use `.\setup.bat` or switch to cmd.exe.
 
 **macOS / Linux:**
 ```bash

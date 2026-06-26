@@ -3,7 +3,13 @@ REM ─────────────────────────�
 REM setup.bat — First-time project setup (Windows)
 REM
 REM Run once after cloning:
-REM   setup.bat
+REM
+REM   Command Prompt (cmd.exe):   setup.bat
+REM   PowerShell:                 .\setup.bat
+REM
+REM If PowerShell shows "not recognized" error, you typed "setup.bat" without
+REM the dot-backslash prefix. PowerShell requires .\  to run scripts in the
+REM current directory. Use: .\setup.bat
 REM
 REM What it does:
 REM   1. Verifies Java 11 is present

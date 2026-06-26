@@ -11,8 +11,9 @@
 ```
 1.  git clone https://github.com/achaljoshi/shared-automation-repo.git
 2.  cd shared-automation-repo
-3.  setup.bat          (Windows)   ← run this BEFORE opening any IDE
-    ./setup.sh         (Mac/Linux)
+3.  .\setup.bat        (Windows PowerShell)   ← run BEFORE opening any IDE
+    setup.bat          (Windows cmd.exe)
+    ./setup.sh         (macOS / Linux)
 4.  Open IDE — everything is auto-configured from committed files
 ```
 
@@ -110,10 +111,20 @@ Run **once** after cloning, **before opening any IDE**.
 ```bash
 # macOS / Linux
 chmod +x setup.sh && ./setup.sh
+```
 
-# Windows
+```powershell
+# Windows — PowerShell
+.\setup.bat
+```
+
+```
+# Windows — Command Prompt (cmd.exe)
 setup.bat
 ```
+
+> **PowerShell note:** Typing `setup.bat` without `.\` gives "not recognized as the name of a cmdlet"
+> error. This is normal PowerShell behaviour — always use `.\setup.bat` in PowerShell.
 
 ### What the script does
 
@@ -271,7 +282,7 @@ Open the `.feature` file → click 🐛 in the gutter next to the `Scenario:` li
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| Red errors everywhere on first open | Setup script wasn't run before opening IDE | Close IDE, run `setup.bat`/`setup.sh`, reopen |
+| Red errors everywhere on first open | Setup script wasn't run before opening IDE | Close IDE, run `.\setup.bat` (PowerShell) or `setup.bat` (cmd.exe) / `./setup.sh` (Mac/Linux), reopen |
 | `Cannot resolve symbol 'Cucumber'` | Maven sync failed | Click ↻ in Maven panel, or **File → Invalidate Caches → Restart** |
 | Step shows red/undefined in feature file | `.idea/cucumber.xml` not loaded yet | Restart IntelliJ; confirm Cucumber plugin is installed |
 | `team-a-system1-tests.jar` not found | setup script didn't complete | Run `./mvnw install -pl team-a-system1 -DskipTests` then ↻ Maven |
@@ -400,7 +411,7 @@ Set a breakpoint in any `.java` file → press F5 → VS Code pauses at the line
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| Red errors everywhere on first open | Setup script wasn't run first | Close VS Code, run `setup.bat`/`setup.sh`, reopen |
+| Red errors everywhere on first open | Setup script wasn't run first | Close VS Code, run `.\setup.bat` (PowerShell) or `setup.bat` (cmd.exe) / `./setup.sh` (Mac/Linux), reopen |
 | Extension popup didn't appear | Extensions already installed, or dismissed | `Ctrl+Shift+P` → **Extensions: Show Recommended Extensions** |
 | Java Language Server not starting | Extension not installed | Confirm `vscjava.vscode-java-pack` is installed and enabled |
 | Maven modules not imported | `java.import.maven.enabled` not applied | `Ctrl+Shift+P` → **Java: Import Java Projects** |
@@ -554,8 +565,21 @@ Edit Configurations → VM options:
 
 ### Red errors everywhere in the IDE on first open
 
-**Cause:** IDE was opened before `setup.bat` / `setup.sh` completed.  
+**Cause:** IDE was opened before the setup script completed.  
 **Fix:** Close the IDE. Run the setup script. Wait for "Setup complete". Reopen the IDE.
+
+```powershell
+# PowerShell
+.\setup.bat
+```
+```
+# cmd.exe
+setup.bat
+```
+```bash
+# macOS / Linux
+./setup.sh
+```
 
 ---
 

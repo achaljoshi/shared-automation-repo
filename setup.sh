@@ -23,15 +23,22 @@ echo "  Shared Automation Framework — First Time Setup"
 echo "════════════════════════════════════════════════════════════"
 echo ""
 
-# ── 1. Check Java 11 ─────────────────────────────────────────────────────────
+# ── 1. Check Java 11+ ────────────────────────────────────────────────────────
 echo "▶ Checking Java version..."
-JAVA_VER=$(java -version 2>&1 | grep -oE '"[0-9]+' | head -1 | tr -d '"')
-if [ "$JAVA_VER" != "11" ]; then
-  echo -e "${RED}✗ Java 11 required. Found: $JAVA_VER${NC}"
-  echo "  Install OpenJDK 11 and set JAVA_HOME, then re-run this script."
+# Extract major version — handles both "1.8.x" (Java 8) and "11/17/21/26" formats
+JAVA_VER_RAW=$(java -version 2>&1 | grep -oE '"[0-9._]+"' | tr -d '"' | head -1)
+JAVA_MAJOR=$(echo "$JAVA_VER_RAW" | cut -d. -f1)
+if [ "$JAVA_MAJOR" = "1" ]; then
+  JAVA_MAJOR=$(echo "$JAVA_VER_RAW" | cut -d. -f2)
+fi
+# Require Java 11 or higher (pom.xml compiles to --release 11 bytecode,
+# which any JDK 11+ supports — no need to restrict to exactly Java 11)
+if [ "$JAVA_MAJOR" -lt 11 ] 2>/dev/null; then
+  echo -e "${RED}✗ Java 11 or higher required. Found: Java $JAVA_MAJOR ($JAVA_VER_RAW)${NC}"
+  echo "  Install OpenJDK 11 (or any newer JDK) and set JAVA_HOME, then re-run."
   exit 1
 fi
-echo -e "${GREEN}✓ Java $JAVA_VER found${NC}"
+echo -e "${GREEN}✓ Java $JAVA_MAJOR found (minimum required: 11)${NC}"
 
 # ── 2. Maven wrapper ──────────────────────────────────────────────────────────
 chmod +x mvnw

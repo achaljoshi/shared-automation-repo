@@ -33,14 +33,22 @@ for /f "tokens=3" %%g in ('java -version 2^>^&1 ^| findstr /i "version"') do (
   set JAVA_VER=%%g
 )
 set JAVA_VER=%JAVA_VER:"=%
-for /f "tokens=1 delims=." %%a in ("%JAVA_VER%") do set JAVA_MAJOR=%%a
 
-if "%JAVA_MAJOR%"=="11" (
-  echo [OK] Java 11 found
-) else (
-  echo [ERROR] Java 11 required. Found: %JAVA_VER%
-  echo         Install OpenJDK 11, set JAVA_HOME, then re-run.
+REM Extract major version — handles both "1.8.x" (Java 8) and "11/17/21/26" formats
+for /f "tokens=1 delims=." %%a in ("%JAVA_VER%") do set JAVA_MAJOR=%%a
+if "%JAVA_MAJOR%"=="1" (
+  REM Old format: 1.8.x → second token is the real major
+  for /f "tokens=2 delims=." %%b in ("%JAVA_VER%") do set JAVA_MAJOR=%%b
+)
+
+REM Require Java 11 or higher (pom.xml compiles to --release 11 bytecode,
+REM which any JDK 11+ supports — no need to restrict to exactly Java 11)
+if %JAVA_MAJOR% LSS 11 (
+  echo [ERROR] Java 11 or higher required. Found: Java %JAVA_MAJOR% ^(%JAVA_VER%^)
+  echo         Install OpenJDK 11 ^(or any newer JDK^), set JAVA_HOME, then re-run.
   exit /b 1
+) else (
+  echo [OK] Java %JAVA_MAJOR% found ^(minimum required: 11^)
 )
 
 REM ── 2. Build shared-core ─────────────────────────────────────────────────────

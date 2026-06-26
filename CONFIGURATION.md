@@ -54,15 +54,17 @@
 
 Only two things must be manually installed. Everything else is handled by the setup script or committed IDE config.
 
-### Java 11 JDK
+### Java 11 or higher
 
 ```bash
 java -version
-# Must show: openjdk 11.x.x  or  java 11.x.x
+# Must show Java 11 or higher — Java 11, 17, 21, 26 all work
 ```
 
-If not installed, get OpenJDK 11 from the shared network drive or your IT team.  
-**Do not use Java 8 or Java 17** — `maven.compiler.source=11` in `pom.xml` requires exactly Java 11.
+If not installed, get any OpenJDK 11+ release from the shared network drive or your IT team.  
+**Java 8 is not supported** — the project uses language features that require Java 11+.  
+Java 17, 21, and 26 are fine — `maven.compiler.source=11` / `target=11` in `pom.xml` tells the
+compiler to produce Java 11 bytecode regardless of which JDK version runs the build.
 
 ### Maven — not required to install separately
 
